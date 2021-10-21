@@ -1,11 +1,11 @@
 #!/bin/bash
 #########################################################################
-# File Name: add_user_files.sh (recommend: ubuntu 21.04)
+# File Name: init_user.sh (recommend: ubuntu 21.04)
 # Author: kerwin
 # mail: kerwin19950830@gmail.com
 # Created Time: 2021年10月16日
 # Function: Auto init VPS include install necessary tool , create user and add user config
-# Notes: recommend to use 'source add_user_files.sh' to execute.
+# Notes: recommend to use 'source init_user.sh' to execute.
 #########################################################################
 set -u
 

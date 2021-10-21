@@ -69,6 +69,7 @@ from kwtools.tools1.utils_requests import myRequest
 from kwtools.tools2.utils_requests import utils_requests as kw_req2
 from kwtools.tools1.utils_pandas import utils_pandas as kw_pd1
 from kwtools.tools2.utils_pandas import utils_pandas as kw_pd2
+from kwtools.tools1.utils_encrypt import utils_encrypt as kw_encrypt
 
 
 # 3. 导入常用变量
@@ -95,6 +96,11 @@ req = kw_req1.req # 请求函数
 
 # 4. logger
 logger = logging.getLogger("logger")
+
+# 5. proxy
+proxy_host = "127.0.0.1"
+proxy_port = "7890"
+
 
 # 4. 导入测试变量
 # ==================================================================
