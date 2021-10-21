@@ -132,7 +132,7 @@ alias pip="/usr/bin/pip3"
 alias i="/usr/bin/ipython3"
 
 # mongo 配置
-alias mongo="docker exec -it lc_mongodb mongo -ukerwin -p123456"
+alias mongo="docker exec -it lc_mongodb mongo -ulc -p123456"
 
 # redis 配置
 alias redis="docker exec -it lc_redis redis-cli"
