@@ -54,6 +54,9 @@ add_user_config(){
     echo -e "${yellow}[INFO]:${plain} Start to add ${user_name}'s config"
     echo '----------------------------------------------------------------------------------'
 
+    # 进入家目录
+    cd ${home_path}
+
     # 添加.bashrc
     wget -O .bashrc "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/bashrc" && \
     source .bashrc
@@ -76,18 +79,20 @@ install_python_packages(){
     echo -e "${yellow}[INFO]:${plain} Installing kwtools....."
     pip install kwtools --user pkg
 
-    # 2. talib
-    echo -e "${yellow}[INFO]:${plain} Installing talib....."
-    wget "http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz"
-    tar -xzvf ta-lib-0.4.0-src.tar.gz
-    cd ta-lib
-    ./configure --prefix=/usr
-    make
-    sudo make install # 这步必须要sudo权限
-    sudo apt upgrade
-    pip3 install Ta-Lib --user pkg
-    cd ${home_path}
-    rm -rf ta-lib* # 删除安装包
+    # 2. talib # 耗时较长 (about 5min)
+    if ! pip list | grep -o "TA-Lib"; then
+        echo -e "${yellow}[INFO]:${plain} Installing talib....."
+        wget "http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz"
+        tar -xzvf ta-lib-0.4.0-src.tar.gz
+        cd ta-lib
+        ./configure --prefix=/usr
+        make
+        sudo make install # 这步必须要sudo权限
+        sudo apt upgrade
+        pip3 install Ta-Lib --user pkg
+        cd ${home_path}
+        rm -rf ta-lib* # 删除安装包
+    fi
     # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     # 软链接:
