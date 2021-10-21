@@ -21,7 +21,7 @@ project_address_array=(
     "https://github.com/Adolf-L/lcquant.git" # lcquant项目
 )
 # Personal access tokens
-PAT="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"
+PAT="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"
 github_sign="https://kerwin19950830%40gmail.com:${PAT}@github.com"
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
