@@ -54,11 +54,11 @@ add_user_config(){
     echo '----------------------------------------------------------------------------------'
 
     # 添加.bashrc
-    wget -O .bashrc "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_20_4/bashrc" && \
+    wget -O .bashrc "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/bashrc" && \
     source .bashrc
 
     # 添加.vimrc
-    wget -O .vimrc "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_20_4/vimrc" && \
+    wget -O .vimrc "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/vimrc" && \
     source .vimrc
 
 }
