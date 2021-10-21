@@ -6,7 +6,7 @@ init kwtools
     vim kwtools/_version.py # update __version__
     rm dist/kwtools*   # remove old .whl and .tar file
     python setup.py sdist bdist_wheel  # create new .whl and .tar file
-    twine upload dist/*   # upload new .whl and .tar file to pypi
+    twine upload dist/*   # upload new .whl and .tar file to pypi (Kerwin_Lui) (21)
 """
 
 from kwtools._version import (

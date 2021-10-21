@@ -132,10 +132,10 @@ alias pip="/usr/bin/pip3"
 alias i="/usr/bin/ipython3"
 
 # mongo 配置
-alias mongo="docker exec -it lc_mongodb mongo -ulc -p123456"
+alias mongo="sudo docker exec -it lc_mongodb mongo -ulc -plc123456"
 
 # redis 配置
-alias redis="docker exec -it lc_redis redis-cli"
+alias redis="sudo docker exec -it lc_redis redis-cli"
 
 # 设置文件同时开启的最大上限
 ulimit -n 65535
