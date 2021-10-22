@@ -132,7 +132,15 @@ add_user_project(){
     [ $? -ne 0 ] && echo -e "${red}[ERROR]:${plain} Deploy project failed!"
 }
 
-
+# 创建常用个人目录
+add_user_folder(){
+    mkdir log
+    mkdir ttt
+    mkdir libs
+    mkdir data
+    mkdir config
+    mkdir downloads
+}
 
 
 # 执行函数
@@ -140,13 +148,7 @@ init_script
 add_user_config
 install_python_packages
 add_user_project
-
-
-
-
-# source .vimrc
-# source .bashrc
-
+add_user_folder
 
 
 echo '=========================================================================='
