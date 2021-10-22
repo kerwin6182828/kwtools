@@ -95,7 +95,7 @@ except:
 req = kw_req1.req # 请求函数
 
 # 4. logger
-logger = logging.getLogger("logger")
+logger = kw_py1._get_logger()
 
 # 5. proxy
 proxy_host = "127.0.0.1"
