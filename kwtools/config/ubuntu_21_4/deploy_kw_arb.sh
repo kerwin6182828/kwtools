@@ -42,3 +42,9 @@ scp -r ~/box/kw_arb/kw_arb/v2_5/config.py kerwin@${ip_address}:~/kw_arb/kw_arb/v
 # 2. secret.py
 scp -r ~/box/kw_arb/kw_arb/secret/secret.py kerwin@${ip_address}:~/kw_arb/kw_arb/secret/secret.py
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# 6. 添加数据库索引
+sudo docker exec -it lc_mongodb mongo -ulc -plc123456
+use lc_market_data
+db.funding_rate.ensureIndex({"lc_symbol":1, "local_timestamp_ms":1}, {"unique":true})
+db.open_vspread_rate.ensureIndex({"spread_symbol":1, "local_timestamp_ms":1}, {"unique":true})
