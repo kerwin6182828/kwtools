@@ -60,3 +60,11 @@ db.open_vspread_rate.getIndexes();
 nohup python3 -u /home/kerwin/kw_arb/kw_arb/v2_5/market.py > ~/log/market.log &
 nohup python3 -u /home/kerwin/kw_arb/kw_arb/v2_5/calculate.py > ~/log/calculate.log &
 nohup python3 -u /home/kerwin/kw_arb/kw_arb/v2_5/monitor.py > ~/log/monitor.log &
+# 查看项目运行的日志
+tail -32 calculate.log
+tail -32 monitor.log
+
+
+# 8. 卸载kw_arb项目, 重装
+rm -rf kw_arb
+git clone -b kw-dev https://github.com/Adolf-L/kw_arb.git
