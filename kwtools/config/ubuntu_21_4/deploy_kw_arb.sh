@@ -44,7 +44,19 @@ scp -r ~/box/kw_arb/kw_arb/secret/secret.py kerwin@${ip_address}:~/kw_arb/kw_arb
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 # 6. 添加数据库索引
+# i. 进入mongo
 sudo docker exec -it lc_mongodb mongo -ulc -plc123456
+# ii. 切换数据库
 use lc_market_data
-db.funding_rate.ensureIndex({"lc_symbol":1, "local_timestamp_ms":1}, {"unique":true})
-db.open_vspread_rate.ensureIndex({"spread_symbol":1, "local_timestamp_ms":1}, {"unique":true})
+# iii. 创建索引
+db.funding_rate.createIndex({"lc_symbol":1, "local_timestamp_ms":1}, {"unique":true});
+db.open_vspread_rate.createIndex({"spread_symbol":1, "local_timestamp_ms":1}, {"unique":true});
+# iv. 展示索引
+db.funding_rate.getIndexes();
+db.open_vspread_rate.getIndexes();
+
+
+# 7. 执行kw_arb项目
+nohup python3 -u /home/kerwin/kw_arb/kw_arb/v2_5/market.py > ~/log/market.log &
+nohup python3 -u /home/kerwin/kw_arb/kw_arb/v2_5/calculate.py > ~/log/calculate.log &
+nohup python3 -u /home/kerwin/kw_arb/kw_arb/v2_5/monitor.py > ~/log/monitor.log &
