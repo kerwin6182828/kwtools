@@ -16,7 +16,7 @@ cd
 
 # 3. 下载'初始化user'的shell脚本, 并执行
 wget "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/init_user.sh"
-# vim init_ubuntu.sh # 修改配置内容 (必填: PAT)
+vim init_user.sh # 修改配置内容 (必填: PAT)
 chmod +x init_user.sh
 source init_user.sh
 
