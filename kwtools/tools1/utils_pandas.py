@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 import math
@@ -10,7 +11,9 @@ from io import StringIO
 
 import warnings
 warnings.filterwarnings("ignore")
-FILE_PATH_FOR_DESKTOP = "/Users/kerwin/Desktop"
+
+home_path = os.getenv("HOME")
+desktop_path = f"{home_path}/Desktop"
 
 
 class UtilsPandas():
@@ -34,7 +37,8 @@ class UtilsPandas():
         if in_file_path:
             df = pd.read_csv(in_file_path, encoding=encoding, engine='python', index_col=index_col)
         else:
-            df = pd.read_csv(FILE_PATH_FOR_DESKTOP+"/{0}.csv".format(in_file_name), encoding=encoding, engine='python', index_col=index_col)
+            print("[INFO]: 没有传入'in_file_path', 尝试从桌面路径读取...")
+            df = pd.read_csv(desktop_path+"/{0}.csv".format(in_file_name), encoding=encoding, engine='python', index_col=index_col)
         if is_df:
             return df
         # 1.需要返回的是某个字段的lst格式
@@ -98,13 +102,13 @@ class UtilsPandas():
                     df.to_excel(out_file_path, index=index, encoding=encoding)
             else:
                 if not export_excel:
-                    df.to_csv(FILE_PATH_FOR_DESKTOP+"/{0}.csv".format(out_file_name), index=index, encoding=encoding)
+                    df.to_csv(desktop_path+"/{0}.csv".format(out_file_name), index=index, encoding=encoding)
                 else:
-                    df.to_excel(FILE_PATH_FOR_DESKTOP+"/{0}.xlsx".format(out_file_name), index=index, encoding=encoding)
+                    df.to_excel(desktop_path+"/{0}.xlsx".format(out_file_name), index=index, encoding=encoding)
         except Exception as e:
             print(e)
             out_file_name = input("输出文件名出错,请重新键入文件名: ")
-            df.to_csv(FILE_PATH_FOR_DESKTOP+"/{0}.csv".format(out_file_name), index=index, encoding=encoding)
+            df.to_csv(desktop_path+"/{0}.csv".format(out_file_name), index=index, encoding=encoding)
 
         return df
 
@@ -114,7 +118,7 @@ class UtilsPandas():
         from pandas import ExcelWriter
         if out_file_path is None:
             # 如果没有out_file_path: 默认放在桌面
-            out_file_path = f"{FILE_PATH_FOR_DESKTOP}/{out_file_name}.xlsx"
+            out_file_path = f"{desktop_path}/{out_file_name}.xlsx"
         with ExcelWriter(out_file_path) as writer:
             for i, df in enumerate(df_lst):
                 if sheet_name_lst:
@@ -156,7 +160,7 @@ class UtilsPandas():
         if in_file_path is not None:
             ordered_d = pd.read_excel(in_file_path, sheet_name=None)
         elif in_file_path is None:
-            ordered_d = pd.read_excel(f"{FILE_PATH_FOR_DESKTOP}/{in_file_name}.xlsx", sheet_name=None)
+            ordered_d = pd.read_excel(f"{desktop_path}/{in_file_name}.xlsx", sheet_name=None)
 
         # 2. 读取对应sheet_name (返回df)
         if sheet_name != None:
@@ -240,7 +244,7 @@ class UtilsPandas():
         if not output:
             return merged_df
         print(">>>3")
-        merged_df.to_csv(FILE_PATH_FOR_DESKTOP+"/{0}.csv".format(out_file_name), index=False, encoding="gb18030")
+        merged_df.to_csv(desktop_path+"/{0}.csv".format(out_file_name), index=False, encoding="gb18030")
         print("合并成功!")
 
 

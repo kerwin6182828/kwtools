@@ -65,7 +65,9 @@ db.open_vspread_rate.getIndexes();
 # 方式二: shell脚本执行 (循环监控程序执行状态)
 cd
 wget "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/ensure_run.sh"
+wget "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/output_financial_statements.sh"
 chmod +x ~/ensure_run.sh
+chmod +x ~/output_financial_statements.sh
 nohup ~/ensure_run.sh > ~/log/ensure_run.log & # 如果用nohup, 相当于就是用bash执行shell脚本了(不需要再加source了)
 
 # 查看项目运行的日志
@@ -79,6 +81,7 @@ ps aux | grep ensure_run.sh
 ps aux | grep market.py
 ps aux | grep calculate.py
 ps aux | grep monitor.py
+ps aux | grep output_financial_statements.sh
 
 
 # 8. 卸载kw_arb项目, 重装
@@ -87,4 +90,4 @@ git clone -b kw-dev https://github.com/Adolf-L/kw_arb.git
 rm -rf ~/lcquant
 git clone -b kw-dev https://github.com/Adolf-L/lcquant.git
 pip uninstall kwtools
-pip install kwtools==
+pip install kwtools==0.0.7

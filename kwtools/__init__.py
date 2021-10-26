@@ -71,6 +71,10 @@ req = kw_req1.req # 请求函数
 # ii. logger
 logger = kw_py1._get_logger()
 
+# iii. home_path
+import os
+home_path = os.getenv("HOME")
+
 
 # 4. 导入测试变量 (本地测试使用)(通用库中禁止使用该变量)
 # ==================================================================
@@ -141,7 +145,7 @@ __all__ = [
     # 2. 工具模块
     "kw_py1", "kw_py2", "kw_pd1", "kw_pd2", "kw_req1", "kw_req2", "kw_encrypt",
     # 3. 常用变量
-    "myRequest", "req", "logger",
+    "myRequest", "req", "logger", "home_path",
     # 4. 测试变量
     "l", "d", "od", "obj",
     "df", "df1", "df2",

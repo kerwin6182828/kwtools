@@ -14,7 +14,7 @@ install_requires = [
     "websocket", "PyExecJS",
 
     # data process
-    "numpy", "pandas",
+    "numpy", "pandas", "xlsxwriter",
 
     # database
     "pymongo", "redis",

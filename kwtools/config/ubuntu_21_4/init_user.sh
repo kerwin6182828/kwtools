@@ -114,6 +114,9 @@ add_user_project(){
     if [ ${user_name} == 'kerwin' ]; then
         project_branch="kw-dev"
     fi
+    if [ ${user_name} == 'mirror' ]; then
+        project_branch="kw-dev"
+    fi
     if [ ${user_name} == 'bigluo' ]; then
         project_branch="bl-dev"
     fi
@@ -139,6 +142,8 @@ add_user_folder(){
     mkdir libs
     mkdir data
     mkdir config
+    mkdir outputs
+    mkdir Desktop
     mkdir downloads
 }
 
