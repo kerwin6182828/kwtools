@@ -65,6 +65,9 @@ add_user_config(){
     wget -O .vimrc "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/vimrc" && \
     source .vimrc
 
+    # 添加kwtools.sh
+    wget -O kwtools.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/kwtools.sh" && \
+    chmod +x kwtools.sh
 }
 
 # 添加用户的python库
@@ -139,6 +142,7 @@ add_user_project(){
 add_user_folder(){
     mkdir log
     mkdir ttt
+    mkdir test
     mkdir libs
     mkdir data
     mkdir config

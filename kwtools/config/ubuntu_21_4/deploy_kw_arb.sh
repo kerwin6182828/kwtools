@@ -58,16 +58,11 @@ db.open_vspread_rate.getIndexes();
 
 
 # 7. 执行kw_arb项目
-# 方式一: 手动执行
-# nohup python3 -u ~/kw_arb/kw_arb/v2_5/market.py > ~/log/market.log &
-# nohup python3 -u ~/kw_arb/kw_arb/v2_5/calculate.py > ~/log/calculate.log &
-# nohup python3 -u ~/kw_arb/kw_arb/v2_5/monitor.py > ~/log/monitor.log &
-# 方式二: shell脚本执行 (循环监控程序执行状态)
-cd
+cd ~
+wget "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/kwtools.sh"
+chmod +x ~/kwtools.sh
 wget "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/ensure_run.sh"
-wget "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/output_financial_statements.sh"
 chmod +x ~/ensure_run.sh
-chmod +x ~/output_financial_statements.sh
 nohup ~/ensure_run.sh > ~/log/ensure_run.log & # 如果用nohup, 相当于就是用bash执行shell脚本了(不需要再加source了)
 
 # 查看项目运行的日志
@@ -81,7 +76,7 @@ ps aux | grep ensure_run.sh
 ps aux | grep market.py
 ps aux | grep calculate.py
 ps aux | grep monitor.py
-ps aux | grep output_financial_statements.sh
+ps aux | grep output_fi_prdl.py
 
 
 # 8. 卸载kw_arb项目, 重装
