@@ -8,12 +8,12 @@ hard_dependencies = (
     "sys", "os", "retry", "traceback", "time", "json",
     "pysnooper", "random", "re", "io", "logging",
     "threading", "multiprocessing", "copy",
-    "schedule", "functools", "hashlib", "gc",
+    "schedule", "functools", "hashlib", "gc", "asyncio",
 
     # request
     "requests", "urllib", "uuid", "email", "user_agent",
     "smtplib", "exchangelib", "urllib3",
-    "socket", "ssl", "websocket",
+    "socket", "ssl", "websocket", "aiohttp",
 
     # data_process
     "numpy", "pandas", "math", "collections", "pymongo", "warnings", "csv",
@@ -53,6 +53,7 @@ if missing_dependencies:
 
 
 # 2. 导入工具模块
+from kwtools.settings import logger
 from kwtools.tools1.utils_python import utils_python as kw_py1
 from kwtools.tools2.utils_python import utils_python as kw_py2
 from kwtools.tools1.utils_requests import utils_requests as kw_req1
@@ -61,19 +62,33 @@ from kwtools.tools1.utils_pandas import utils_pandas as kw_pd1
 from kwtools.tools2.utils_pandas import utils_pandas as kw_pd2
 from kwtools.tools1.utils_encrypt import utils_encrypt as kw_encrypt
 
+from kwtools.tools1.utils_python import utils_python as py1
+from kwtools.tools2.utils_python import utils_python as py2
+from kwtools.tools1.utils_requests import utils_requests as req1
+from kwtools.tools2.utils_requests import utils_requests as req2
+from kwtools.tools1.utils_pandas import utils_pandas as pd1
+from kwtools.tools2.utils_pandas import utils_pandas as pd2
+from kwtools.tools1.utils_encrypt import utils_encrypt as en1
 
-# 3. 导入常用变量
+
+# 3. 导入常用函数/变量
 # ==================================================================
-# i. requests
+# i. home_path
+import os
+home_path = os.getenv("HOME")
+
+# ii. requests
 from kwtools.tools1.utils_requests import myRequest
 req = kw_req1.req # 请求函数
 
-# ii. logger
-logger = kw_py1._get_logger()
+# iii. aiohttp
+from kwtools.tools2.utils_requests import AsyncRequests
+# aio_req = AsyncRequests.aio_req
+# ensure_aio_req = AsyncRequests.ensure_aio_req
+# aio_close = AsyncRequests.close
 
-# iii. home_path
-import os
-home_path = os.getenv("HOME")
+# iv. retry_func装饰器
+from kwtools.tools2.utils_python import retry_func
 
 
 # 4. 导入测试变量 (本地测试使用)(通用库中禁止使用该变量)
@@ -143,9 +158,11 @@ __all__ = [
     # 1. 依赖库
     "np", "pd",
     # 2. 工具模块
+    "logger",
     "kw_py1", "kw_py2", "kw_pd1", "kw_pd2", "kw_req1", "kw_req2", "kw_encrypt",
-    # 3. 常用变量
-    "myRequest", "req", "logger", "home_path",
+    "py1", "py2", "pd1", "pd2", "req1", "req2", "en1",
+    # 3. 常用变量/函数
+    "home_path", "myRequest", "req", "AsyncRequests", "retry_func",
     # 4. 测试变量
     "l", "d", "od", "obj",
     "df", "df1", "df2",

@@ -11,7 +11,7 @@ install_requires = [
     # requests
     "retry", "pysnooper", "user_agent", "requests",
     "uuid", "exchangelib", "urllib3", "schedule",
-    "websocket", "PyExecJS",
+    "websocket", "PyExecJS", "aiohttp",
 
     # data process
     "numpy", "pandas", "xlsxwriter",
