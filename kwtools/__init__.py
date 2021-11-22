@@ -115,7 +115,7 @@ df2 = pd.DataFrame({"col x":["class 1", "class 2", "class 3", "class 4"], "col y
 # 3. pymongo
 # [注意: pymongo的连接是'惰性连接', 当你真正展开它的生成器的时候, 才会真的进行连接操作. 有点像'列表生成式'的感觉] [pymysql会提前报错]
 try:
-    mongo_client = pymongo.MongoClient(f'mongodb://kerwin:kw618@{HOST}:27017/')
+    mongo_client = pymongo.MongoClient(f'mongodb://kerwin:kw618@127.0.0.1:27017/')
 except:
     mongo_client = ""
 

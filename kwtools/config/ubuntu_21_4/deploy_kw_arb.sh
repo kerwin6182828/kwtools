@@ -50,9 +50,9 @@ sudo docker exec -it lc_mongodb mongo -ulc -plc123456
 # ii. 切换数据库
 use lc_market_data
 # iii. 创建索引
-db.funding_rate.createIndex({"lc_symbol":1, "local_timestamp_ms":1}, {"unique":true});
-db.open_vspread_rate.createIndex({"spread_symbol":1, "local_timestamp_ms":1}, {"unique":true});
-db.close_vspread_rate.createIndex({"spread_symbol":1, "local_timestamp_ms":1}, {"unique":true});
+db.funding_rate.createIndex({"lc_symbol":1, "local_timestamp_ms":1, "period_m":1, "period_h":1, "period_d":1}, {"unique":true})
+db.open_vspread_rate.createIndex({"spread_symbol":1, "local_timestamp_ms":1, "period_m":1, "period_h":1, "period_d":1}, {"unique":true})
+db.close_vspread_rate.createIndex({"spread_symbol":1, "local_timestamp_ms":1, "period_m":1, "period_h":1, "period_d":1}, {"unique":true})
 # iv. 展示索引
 db.funding_rate.getIndexes();
 db.open_vspread_rate.getIndexes();
