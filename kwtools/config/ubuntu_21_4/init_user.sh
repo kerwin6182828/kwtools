@@ -7,18 +7,23 @@
 # Function: Auto init VPS include install necessary tool , create user and add user config
 # Notes: recommend to use 'source init_user.sh' to execute.
 #########################################################################
-set -u
+set -u # 设置shell执行方式 (当执行时使用到未定义过的变量，则显示错误信息)
 
 
 
 # 定义配置内容
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+# 需要pip安装的python库
+python_package_array=(
+    "kwtools"
+    # "talib"
+)
 # 需要部署项目的github路径
 project_address_array=(
     "https://github.com/Adolf-L/kw_arb.git" # kw_arb项目
-    "https://github.com/Adolf-L/lc_arb.git" # lc_arb项目
     "https://github.com/Adolf-L/lcquant.git" # lcquant项目
+    # "https://github.com/Adolf-L/lc_arb.git" # lc_arb项目
 )
 # Personal access tokens
 PAT="" # Required
@@ -76,26 +81,34 @@ install_python_packages(){
     echo -e "${yellow}[INFO]:${plain} Start to install ${user_name}'s python packages"
     echo '----------------------------------------------------------------------------------'
 
-    # 添加用户个人python库
+    # 添加用户私有python库
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    # 1. kwtools
-    echo -e "${yellow}[INFO]:${plain} Installing kwtools....."
-    pip install kwtools --user pkg
-
-    # 2. talib # 耗时较长 (about 5min)
-    if ! pip list | grep -o "TA-Lib"; then
-        echo -e "${yellow}[INFO]:${plain} Installing talib....."
-        wget "http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz"
-        tar -xzvf ta-lib-0.4.0-src.tar.gz
-        cd ta-lib
-        ./configure --prefix=/usr
-        make
-        sudo make install # 这步必须要sudo权限
-        sudo apt upgrade
-        pip3 install Ta-Lib --user pkg
-        cd ${home_path}
-        rm -rf ta-lib* # 删除安装包
-    fi
+    echo -e "${yellow}[INFO]:${plain} 正在为${user_name}用户使用pip安装python库..."
+    for python_package in ${python_package_array[@]}; do
+        echo -e "正在pip安装 ${python_package} ..."
+        # 1. kwtools
+        if [ ${python_package} == 'kwtools' ]; then
+            echo -e "${yellow}[INFO]:${plain} Installing kwtools....."
+            pip install kwtools --user pkg
+        # 2. talib # 耗时较长 (about 5min)
+        elif [ ${python_package} == 'talib' ]; then
+            if ! pip list | grep -o "TA-Lib"; then
+                echo -e "${yellow}[INFO]:${plain} Installing talib....."
+                wget "http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz"
+                tar -xzvf ta-lib-0.4.0-src.tar.gz
+                cd ta-lib
+                ./configure --prefix=/usr
+                make
+                sudo make install # 这步必须要sudo权限
+                sudo apt upgrade
+                pip3 install Ta-Lib --user pkg
+                cd ${home_path}
+                rm -rf ta-lib* # 删除安装包
+            fi
+        else
+            echo "没有匹配${python_package}的安装内容"
+        fi
+    done
     # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     # 软链接:
@@ -116,18 +129,17 @@ add_user_project(){
     # 项目分支名
     if [ ${user_name} == 'kerwin' ]; then
         project_branch="kw-dev"
-    fi
-    if [ ${user_name} == 'mirror' ]; then
-        project_branch="kw-dev"
-    fi
-    if [ ${user_name} == 'bigluo' ]; then
+    elif [ ${user_name} == 'bigluo' ]; then
         project_branch="bl-dev"
+    else
+        project_branch="kw-dev" # 默认用kw-dev分支
     fi
 
     # 部署github项目代码
-    echo -e "${yellow}[INFO]:${plain} 正在部署项目代码..."
+    echo -e "${yellow}[INFO]:${plain} 正在为${user_name}用户部署项目代码..."
     for project_address in ${project_address_array[@]}; do
         project_name=`echo ${project_address} | sed 's/.*\/\(.*\)\.git/\1/g'`
+        echo -e "正在clone安装 ${project_name} ..."
         git clone -b ${project_branch} ${project_address} # (个人分支)
         pip install -r ${project_name}/requirements.txt --user pkg # 安装项目依赖库 (在用户环境下安装python库) (用户之间相互独立, 环境干净)
         echo "${home_path}/${project_name}" >> "${python_site_packages_path}/python.pth" # 添加到python默认搜索路径

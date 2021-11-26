@@ -4,9 +4,9 @@ import traceback
 
 class Logger():
 
-    def __init__(self):
+    def __init__(self, logger_name="kw"):
         # 1. 创建logger和handler
-        logger = logging.getLogger("kw")
+        logger = logging.getLogger(logger_name)
         stream_handler = logging.StreamHandler()
         # file_handler = logging.FileHandler(filename=f"{FILE_PATH_FOR_HOME}/log/test.log")
 
@@ -129,13 +129,11 @@ class Logger():
         self.logger.setLevel(*args)
 
 
-
-def _get_logger():
-    logger = Logger()
-    return logger
+    def level(self):
+        self.logger.level
 
 
-logger = Logger()
+logger = Logger("kw")
 
 
 if __name__ == "__main__":

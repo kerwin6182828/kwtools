@@ -20,7 +20,6 @@ from retry import retry
 from urllib.parse import urlparse
 
 from kwtools.settings import logger
-from kwtools.tools2.utils_python import retry_func
 
 
 # Coroutine lockers. e.g. {"locker_name": locker}
@@ -38,7 +37,7 @@ def async_method_locker(name, wait=True, timeout=1):
         timeout: Timeout time to be locked, default is 1s.
 
     NOTE:
-        This decorator must to be used on `async method`.
+        This decorator must to be used on `async method`. [必须是协程函数]
     """
     assert isinstance(name, str)
 
@@ -71,9 +70,13 @@ class AsyncRequests(object):
     _SESSIONS = {}  # {"domain-name": session, ... }
 
     @classmethod
-    async def ensure_aio_req(cls, retry_times=5, timeout=10, **kwargs):
+    async def ensure_aio_req(cls, url, method="GET", retry_times=1, timeout=10, **kwargs):
         """ Retry asyncio request
+        Function: 重试多次请求, 确保访问正常
+        Tips:
+            - 因为aio_req对预期内和预期外都做了捕获, 所以ensure_aio_req就不需要做这层异常捕获了
         """
+        error = None
         i = 1
         while i <= retry_times:
             try:
@@ -82,25 +85,24 @@ class AsyncRequests(object):
                     logger.info(f"[网络请求异常] 尝试第 {i} 次访问....")
                     logger.info("====================================================")
                     await asyncio.sleep(1)
-                code, success, error = await cls.aio_req(timeout=timeout, **kwargs)
-                logger.debug(f"code <{type(code)}>: {code}")
-                if success:
-                    logger.debug(f"success <{type(success)}>: {success}")
-                    return code, success, None
-                elif error:
-                    logger.error(f"error <{type(error)}>: {error}")
-                    raise Exception(f"[网页请求异常] (第 {i} 次请求时)")
-            except:
-                e = traceback.format_exc(limit=10)
-                logger.error(f"[网页请求崩溃] url:{kwargs['url']}")
-                logger.error(e)
+                code, success, error = await cls.aio_req(method=method, url=url, timeout=timeout, **kwargs)
+                if error:
+                    raise IOError(error)
+                return code, success, None
+            except Exception as e:
+                try:
+                    error = json.loads(str(e))
+                except:
+                    error = str(e)
+                logger.debug(error)
+                logger.debug(f"[Req Error] ({i}/{retry_times} retry request)")
             i += 1
-        return '', None, e
+        return code, None, error
 
 
 
     @classmethod
-    async def aio_req(cls, method="GET", url="", params={}, data={}, headers={}, timeout=10, **kwargs):
+    async def aio_req(cls, method="GET", url="", params={}, data=None, headers={}, timeout=10, **kwargs):
         """ Create a HTTP request.
 
         Args:
@@ -122,10 +124,20 @@ class AsyncRequests(object):
             code: HTTP response code.
             success: HTTP response data. If something wrong, this field is None.
             error: If something wrong, this field will holding a Error information, otherwise it's None.
+                    (调用者: 'success为空'不一定表示异常; 但'error为真'一定表示异常)
 
         Raises:
             HTTP request exceptions or response data parse exceptions. All the exceptions will be captured and return
             Error information.
+
+        Notices:
+            1. data: if `data` is not passed, must be `None`, can not be `{}`. [Careful!!]
+
+        Tips:
+            1. 对请求过程做了完备的异常处理 (预期内和预期外都做了捕获)
+            2. error_type:
+                    <class 'OSError'>: 预期内的异常
+                    <class 'Exception'>: 预期外的异常
         """
         session = cls._get_session(url)
         try:
@@ -138,41 +150,57 @@ class AsyncRequests(object):
             elif method.upper() == "DELETE":
                 response = await session.delete(url, params=params, json=data, headers=headers, timeout=timeout, **kwargs)
             else:
-                error = "http method error!"
-                return None, None, error
-            logger.debug(f"response: {response}")
-            code = response.status
-            text = await response.text()
-        except:
-            e = traceback.format_exc(limit=10)
-            logger.info(f"e: {e}")
-            logger.info(f"method: {method}")
-            logger.info(f"url: {url}")
-            logger.info(f"params: {params}")
-            logger.info(f"data: {data}")
-            logger.info(f"headers: {headers}")
-            logger.info(f"timeout: {timeout}")
-            logger.info(f"proxy: {kwargs.get('proxy')}")
-            return None, None, e
+                raise IOError(f"[Http Method Error] method:{method}")
 
-        if code not in (200, 201, 202, 203, 204, 205, 206):
-            logger.info(f"method: {method}")
-            logger.info(f"url: {url}")
-            logger.info(f"params: {params}")
-            logger.info(f"data: {data}")
-            logger.info(f"headers: {headers}")
-            logger.info(f"code: {code}")
-            logger.info(f"timeout: {timeout}")
-            logger.info(f"proxy: {kwargs.get('proxy')}")
-            logger.info(f"response: {response}")
-            logger.info(f"resp.text(): {text}")
-            return code, None, text
-        else:
             try:
-                result = await response.json()
+                code = float(response.status) # type: int # status_code
             except:
-                result = await response.text()
-            return code, result, None
+                raise IOError(f"[Response object is error] response:{response}")
+
+            if code // 100 != 2:
+                error = await response.text()
+                raise IOError(error)
+            else:
+                try:
+                    result = await response.json()
+                except:
+                    result = await response.text()
+                logger.debug("--------[SUCCESS]--------->>")
+                logger.debug(f"[method]: {method}")
+                logger.debug(f"[url]: {url}")
+                logger.debug(f"[params]: {params}")
+                logger.debug(f"[data]: {data}")
+                logger.debug(f"[headers]: {headers}")
+                logger.debug(f"[timeout]: {timeout}")
+                logger.debug(f"[kwargs]: {kwargs}")
+                logger.debug(f"[proxy]: {kwargs.get('proxy')}")
+                logger.debug(f"[code]: {code}")
+                logger.debug(f"[result]: {result}")
+                logger.debug("<<--------[SUCCESS]---------")
+                return code, result, None
+
+        except Exception as e:
+            error_type = type(e)
+            error = str(e)
+            try:
+                code
+            except:
+                code = 400
+            logger.warning("---------[ERROR]--------->>")
+            logger.warning(f"[error_type]: {error_type}")
+            logger.warning(f"[error]: {error}")
+            logger.warning(f"[method]: {method}")
+            logger.warning(f"[url]: {url}")
+            logger.warning(f"[params]: {params}")
+            logger.warning(f"[data]: {data}")
+            logger.warning(f"[headers]: {headers}")
+            logger.warning(f"[timeout]: {timeout}")
+            logger.warning(f"[kwargs]: {kwargs}")
+            logger.warning(f"[proxy]: {kwargs.get('proxy')}")
+            logger.warning("<<--------[ERROR]---------")
+            return 400, None, error
+
+
 
     @classmethod
     def _get_session(cls, url):
@@ -197,6 +225,168 @@ class AsyncRequests(object):
         for key in list(cls._SESSIONS.keys()):
             await cls._SESSIONS[key].close()
             del cls._SESSIONS[key]
+
+
+
+class Requests(object):
+    """ Synchronous HTTP Request Client.
+    """
+
+    # Every domain name holds a connection session, for less system resource utilization and faster request speed.
+    _SESSIONS = {}  # {"domain-name": session, ... }
+
+    @classmethod
+    def ensure_req(cls, url, method="GET", retry_times=1, timeout=10, **kwargs):
+        """ Retry asyncio request
+        Function: 重试多次请求, 确保访问正常
+        Tips:
+            - 因为aio_req对预期内和预期外都做了捕获, 所以ensure_aio_req就不需要做这层异常捕获了
+        """
+        error = None
+        i = 1
+        while i <= retry_times:
+            try:
+                if i != 1:
+                    logger.info("====================================================")
+                    logger.info(f"[网络请求异常] 尝试第 {i} 次访问....")
+                    logger.info("====================================================")
+                    time.sleep(1)
+                code, success, error = cls.req(method=method, url=url, timeout=timeout, **kwargs)
+                if error:
+                    raise IOError(error)
+                return code, success, None
+            except Exception as e:
+                try:
+                    error = json.loads(str(e))
+                except:
+                    error = str(e)
+                logger.debug(error)
+                logger.debug(f"[Req Error] ({i}/{retry_times} retry request)")
+            i += 1
+        return code, None, error
+
+
+
+    @classmethod
+    def req(cls, method="GET", url="", params={}, data=None, headers={}, timeout=10, **kwargs):
+        """ Create a HTTP request.
+
+        Args:
+            method: HTTP request method. `GET` / `POST` / `PUT` / `DELETE`
+            url: Request url.
+            params: HTTP query params.
+            data: HTTP request body, dict format.
+            headers: HTTP request header.
+            timeout: HTTP request timeout(seconds), default is 10s.
+
+            **kwargs:
+                cookies: pass
+                proxy: HTTP proxy. (no proxy need to pass None, not "")
+                auth: pass; (default is None)
+                allow_redirects: (default is True)
+                verify_ssl: pass
+
+        Return:
+            code: HTTP response code.
+            success: HTTP response data. If something wrong, this field is None.
+            error: If something wrong, this field will holding a Error information, otherwise it's None.
+                    (调用者: 'success为空'不一定表示异常; 但'error为真'一定表示异常)
+
+        Raises:
+            HTTP request exceptions or response data parse exceptions. All the exceptions will be captured and return
+            Error information.
+
+        Notices:
+            1. data: if `data` is not passed, must be `None`, can not be `{}`. [Careful!!]
+
+        Tips:
+            1. 对请求过程做了完备的异常处理 (预期内和预期外都做了捕获)
+            2. error_type:
+                    <class 'OSError'>: 预期内的异常
+                    <class 'Exception'>: 预期外的异常
+        """
+        session = cls._get_session(url)
+        try:
+            if method.upper() == "GET":
+                response = session.get(url, params=params, headers=headers, timeout=timeout, **kwargs)
+            elif method.upper() == "POST":
+                response = session.post(url, params=params, data=data, headers=headers, timeout=timeout, **kwargs)
+            elif method.upper() == "PUT":
+                response = session.put(url, params=params, data=data, headers=headers, timeout=timeout, **kwargs)
+            elif method.upper() == "DELETE":
+                response = session.delete(url, params=params, data=data, headers=headers, timeout=timeout, **kwargs)
+            else:
+                raise IOError(f"[Http Method Error] method:{method}")
+
+            try:
+                code = float(response.status_code) # type: int
+            except:
+                raise IOError(f"[Response object is error] response:{response}")
+
+            if code // 100 != 2:
+                error = response.text
+                raise IOError(error)
+            else:
+                try:
+                    result = response.json()
+                except:
+                    result = response.text
+                logger.debug("--------[SUCCESS]--------->>")
+                logger.debug(f"[method]: {method}")
+                logger.debug(f"[url]: {url}")
+                logger.debug(f"[params]: {params}")
+                logger.debug(f"[data]: {data}")
+                logger.debug(f"[headers]: {headers}")
+                logger.debug(f"[timeout]: {timeout}")
+                logger.debug(f"[kwargs]: {kwargs}")
+                logger.debug(f"[proxy]: {kwargs.get('proxy')}")
+                logger.debug(f"[code]: {code}")
+                logger.debug(f"[result]: {result}")
+                logger.debug("<<--------[SUCCESS]---------")
+                return code, result, None
+
+        except Exception as e:
+            error_type = type(e)
+            error = str(e)
+            try:
+                code
+            except:
+                code = 400
+            logger.warning("---------[ERROR]--------->>")
+            logger.warning(f"[error_type]: {error_type}")
+            logger.warning(f"[error]: {error}")
+            logger.warning(f"[method]: {method}")
+            logger.warning(f"[url]: {url}")
+            logger.warning(f"[params]: {params}")
+            logger.warning(f"[data]: {data}")
+            logger.warning(f"[headers]: {headers}")
+            logger.warning(f"[timeout]: {timeout}")
+            logger.warning(f"[kwargs]: {kwargs}")
+            logger.warning(f"[proxy]: {kwargs.get('proxy')}")
+            logger.warning("<<--------[ERROR]---------")
+            return 400, None, error
+
+
+
+    @classmethod
+    def _get_session(cls, url):
+        """ Get the connection session for url's domain, if no session, create a new.
+
+        Args:
+            url: HTTP request url.
+
+        Returns:
+            session: HTTP request session.
+        """
+        parsed_url = urlparse(url)
+        key = parsed_url.netloc or parsed_url.hostname
+        if key not in cls._SESSIONS:
+            session = requests.Session()
+            cls._SESSIONS[key] = session
+        return cls._SESSIONS[key]
+
+
+
 
 
 
@@ -249,22 +439,41 @@ async def test_AsyncRequests():
     # await AsyncRequests.close() # 一定要记得close
 
 
+    # # # CASE3:
+    # url = "https://explorer.roninchain.com/_next/data/lNQyeI8jVUhj9VU9VhQ-a/tx/0x2e7f3b06b0fffafde76584fdd5b4d20ae5edae1e196d7eec20dd000cdecf83a0.json"
+    # url = 'https://explorer.roninchain.com/address/ronin:3a19d7a2ab8a42f4db502f5cfab0391916e311d7/tokentxns?ps=100&p=1' # 可以正常访问
+    # url = "https://explorer.roninchain.com/_next/data/2NTrPf5Ptvob5eLzOX2y2/tx/0xac5b46fd556767543e705a31bade534c358442f22919ab1833326d7e196c10d2.json"
+    # url = "https://explorer.roninchain.com/_next/data/2NTrPf5Ptvob5eLzOX2y2/tx/0xf3a9debe3a56d1df6a412711aada4d7cd8c7be009a23aaa08a94a8b319de64b9.json"
+    # proxy = None
+    # code, success, error  = await AsyncRequests.ensure_aio_req(retry_times=3, method="GET", url=url, proxy=proxy)
+    # print(f"code:{code}")
+    # print(f"success:{success}")
+    # print(f"error:{error}")
+    # await AsyncRequests.close() # 记得关闭session (否则会有报错)
 
 
-    # # CASE3:
-    url = "https://explorer.roninchain.com/_next/data/lNQyeI8jVUhj9VU9VhQ-a/tx/0x2e7f3b06b0fffafde76584fdd5b4d20ae5edae1e196d7eec20dd000cdecf83a0.json"
-    url = 'https://explorer.roninchain.com/address/ronin:3a19d7a2ab8a42f4db502f5cfab0391916e311d7/tokentxns?ps=100&p=1' # 可以正常访问
-    url = "https://explorer.roninchain.com/_next/data/2NTrPf5Ptvob5eLzOX2y2/tx/0xac5b46fd556767543e705a31bade534c358442f22919ab1833326d7e196c10d2.json"
-    url = "https://explorer.roninchain.com/_next/data/2NTrPf5Ptvob5eLzOX2y2/tx/0xf3a9debe3a56d1df6a412711aada4d7cd8c7be009a23aaa08a94a8b319de64b9.json"
-    proxy = None
-    code, success, error  = await AsyncRequests.ensure_aio_req(retry_times=3, method="GET", url=url, proxy=proxy)
-    print(f"code:{code}")
-    print(f"success:{success}")
-    print(f"error:{error}")
-    await AsyncRequests.close() # 记得关闭session (否则会有报错)
+    # # CASE4:
+    url = "http://127.0.0.1:8008/assets?user=LSH&marketplace=BN_SPOT"
+    c, s, e = await AsyncRequests.ensure_aio_req(url=url)
+    print(c)
+    print(s)
+    print(e)
+    await AsyncRequests.close()
+
+
+
+def test_Requests():
+
+    # Case1
+    url = "http://127.0.0.1:8008/assets?user=LSH&marketplace=BN_SPOT"
+    c, s, e = Requests.ensure_req(url=url)
+    print(c)
+    print(s)
+    print(e)
 
 
 
 if __name__ == '__main__':
-    asyncio.run(test_AsyncRequests())
     pass
+    # asyncio.run(test_AsyncRequests())
+    test_Requests()

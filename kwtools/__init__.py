@@ -82,7 +82,7 @@ from kwtools.tools1.utils_requests import myRequest
 req = kw_req1.req # 请求函数
 
 # iii. aiohttp
-from kwtools.tools2.utils_requests import AsyncRequests
+from kwtools.tools2.utils_requests import AsyncRequests, Requests
 # aio_req = AsyncRequests.aio_req
 # ensure_aio_req = AsyncRequests.ensure_aio_req
 # aio_close = AsyncRequests.close

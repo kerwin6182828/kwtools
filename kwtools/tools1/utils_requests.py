@@ -22,6 +22,7 @@ import redis
 import socket
 import websocket
 import ssl
+from kwtools.settings import logger
 
 ## exchange邮件发送相关的库包
 from exchangelib import DELEGATE, Account, Credentials, Configuration, NTLM, Message, Mailbox, HTMLBody
@@ -137,18 +138,19 @@ class myRequest():
         # 4.开始发送req
         # print("\nreq 已发出。。\n")
         # logger.log(logging.DEBUG, "req 已发出..\n")
-        if req_method == "get":
+        if req_method.lower() == "get":
             res_obj = requests.get(url, headers=headers,proxies=proxies, auth=auth, timeout=timeout, allow_redirects=allow_redirects, **kwargs)
         # 下面的 data参数 必须要先用json.dumps()转成str后，才能发送请求！！！ //k200628: 不需要转成json啊, 直接用dict类型就能传入请求啊
-        elif req_method == "post":
+        elif req_method.lower() == "post":
             res_obj = requests.post(url, headers=headers,proxies=proxies, data=data, timeout=timeout, allow_redirects=allow_redirects, **kwargs)
-        elif req_method == "put":
+        elif req_method.lower() == "put":
             res_obj = requests.put(url, headers=headers,proxies=proxies, data=data, timeout=timeout, allow_redirects=allow_redirects, **kwargs)
-        elif req_method == "delete":
+        elif req_method.lower() == "delete":
             res_obj = requests.delete(url, headers=headers,proxies=proxies, data=data, timeout=timeout, allow_redirects=allow_redirects, **kwargs)
         else:
             msg = f"req_method未知: {req_method}; 请检查..."
-            logger.log(40, msg)
+            logger.error(msg)
+            res_obj = None
         self.res_obj = res_obj
 
         # 5.修改需要的编码格式

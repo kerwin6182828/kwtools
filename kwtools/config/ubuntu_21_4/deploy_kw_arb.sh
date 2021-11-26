@@ -4,7 +4,7 @@
 
 # 1. 下载'初始化ubunut'的shell脚本, 并执行
 wget -O init_ubuntu.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/init_ubuntu.sh"
-vim init_ubuntu.sh # 修改配置内容
+vim init_ubuntu.sh # 1. 修改配置内容 2.
 chmod +x init_ubuntu.sh
 source init_ubuntu.sh
 
@@ -19,11 +19,14 @@ wget -O init_user.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/ma
 vim init_user.sh # 修改配置内容 (必填: PAT)
 chmod +x init_user.sh
 source init_user.sh
+# 本地端操作 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+remote_ip="18.183.104.223" # 需要更新ip
+remote_user="moon" # 需要更新用户名
+ssh-copy-id ${remote_user}@${remote_ip}
+# 输入用户密码, 之后就可以免密登录了
 
 
 # 4. 上传二封的vnpy
-remote_ip="18.183.104.223" # 需要更新ip
-remote_user="mirror"
 # 本地端操作 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 cd /usr/local/lib/python3.9/site-packages/vnpy-2.1.9-py3.9.egg
 tar zcvf vnpy.tar.gz vnpy # 压缩
@@ -49,6 +52,7 @@ scp -r ~/box/kw_arb/kw_arb/secret/secret.py ${remote_user}@${remote_ip}:~/kw_arb
 sudo docker exec -it lc_mongodb mongo -ulc -plc123456
 # ii. 切换数据库
 use lc_market_data
+db.dropDatabase(); # 清空当前数据库
 # iii. 创建索引
 db.funding_rate.createIndex({"lc_symbol":1, "local_timestamp_ms":1, "period_m":1, "period_h":1, "period_d":1}, {"unique":true})
 db.open_vspread_rate.createIndex({"spread_symbol":1, "local_timestamp_ms":1, "period_m":1, "period_h":1, "period_d":1}, {"unique":true})
@@ -57,10 +61,11 @@ db.close_vspread_rate.createIndex({"spread_symbol":1, "local_timestamp_ms":1, "p
 db.funding_rate.getIndexes();
 db.open_vspread_rate.getIndexes();
 db.close_vspread_rate.getIndexes();
+exit
 
 
 # 7. 执行kw_arb项目
-cd ~
+cd
 # 导入工具库
 wget -O kwtools.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/kwtools.sh"
 chmod +x ~/kwtools.sh
@@ -94,4 +99,4 @@ git clone -b kw-dev https://github.com/Adolf-L/kw_arb.git
 rm -rf ~/lcquant
 git clone -b kw-dev https://github.com/Adolf-L/lcquant.git
 pip uninstall kwtools
-pip install kwtools==0.0.8
+pip install kwtools==0.1.3
