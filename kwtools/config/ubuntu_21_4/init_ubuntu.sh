@@ -7,7 +7,7 @@
 # Function: Auto init VPS include install necessary tool , create user and add user config
 # Notes: recommend to use 'source init_ubuntu.sh' to execute.
 #########################################################################
-set -u
+set -u # 设置shell执行方式 (当执行时使用到未定义过的变量，则显示错误信息)
 
 
 # 定义配置内容
@@ -106,7 +106,7 @@ create_user(){
     # 若系统已经有该用户名, 则先删除再重新创建:
     if cat /etc/passwd | grep ${user_name}; then
         echo -e "${yellow}[INFO]: ${plain}用户'${user_name}'已经被创建, 尝试删除后重建..."
-        userdel ${user_name} # 删除用户 (系统会自动在/etc/passwd文件中将其删除)
+        userdel -r ${user_name} # 删除用户 (系统会自动在/etc/passwd文件中将其删除)
     fi
 
     # 为用户创建家目录, 并且指定使用bash shell

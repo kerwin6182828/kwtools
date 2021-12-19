@@ -86,10 +86,12 @@ install_python_packages(){
     echo -e "${yellow}[INFO]:${plain} 正在为${user_name}用户使用pip安装python库..."
     for python_package in ${python_package_array[@]}; do
         echo -e "正在pip安装 ${python_package} ..."
+        
         # 1. kwtools
         if [ ${python_package} == 'kwtools' ]; then
             echo -e "${yellow}[INFO]:${plain} Installing kwtools....."
             pip install kwtools --user pkg
+
         # 2. talib # 耗时较长 (about 5min)
         elif [ ${python_package} == 'talib' ]; then
             if ! pip list | grep -o "TA-Lib"; then

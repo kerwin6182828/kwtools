@@ -22,8 +22,8 @@ from urllib.parse import urlparse
 from kwtools.settings import logger
 
 
-# Coroutine lockers. e.g. {"locker_name": locker}
-METHOD_LOCKERS = {}
+
+METHOD_LOCKERS = {} # Coroutine lockers. e.g. {"locker_name": locker}
 
 
 def async_method_locker(name, wait=True, timeout=1):
@@ -62,6 +62,7 @@ def async_method_locker(name, wait=True, timeout=1):
     return decorating_function
 
 
+
 class AsyncRequests(object):
     """ Asynchronous HTTP Request Client.
     """
@@ -70,7 +71,7 @@ class AsyncRequests(object):
     _SESSIONS = {}  # {"domain-name": session, ... }
 
     @classmethod
-    async def ensure_aio_req(cls, url, method="GET", retry_times=1, timeout=10, **kwargs):
+    async def ensure_aio_req(cls, url, method="GET", retry_times=1, timeout=15, **kwargs):
         """ Retry asyncio request
         Function: 重试多次请求, 确保访问正常
         Tips:
@@ -84,7 +85,7 @@ class AsyncRequests(object):
                     logger.info("====================================================")
                     logger.info(f"[网络请求异常] 尝试第 {i} 次访问....")
                     logger.info("====================================================")
-                    await asyncio.sleep(1)
+                    await asyncio.sleep(5)
                 code, success, error = await cls.aio_req(method=method, url=url, timeout=timeout, **kwargs)
                 if error:
                     raise IOError(error)
@@ -94,15 +95,15 @@ class AsyncRequests(object):
                     error = json.loads(str(e))
                 except:
                     error = str(e)
-                logger.debug(error)
-                logger.debug(f"[Req Error] ({i}/{retry_times} retry request)")
+                logger.warning(error)
+                logger.warning(f"[Req Error] ({i}/{retry_times} retry request)")
             i += 1
         return code, None, error
 
 
 
     @classmethod
-    async def aio_req(cls, method="GET", url="", params={}, data=None, headers={}, timeout=10, **kwargs):
+    async def aio_req(cls, url, method="GET", params={}, data=None, headers={}, timeout=15, **kwargs):
         """ Create a HTTP request.
 
         Args:
@@ -115,7 +116,7 @@ class AsyncRequests(object):
 
             **kwargs:
                 cookies: pass
-                proxy: HTTP proxy. (no proxy need to pass None, not "")
+                proxy: HTTP proxy. (no proxy need to pass None, not "") <str>
                 auth: pass
                 allow_redirects: default is True;
                 verify_ssl: pass
@@ -165,23 +166,28 @@ class AsyncRequests(object):
                     result = await response.json()
                 except:
                     result = await response.text()
-                logger.debug("--------[SUCCESS]--------->>")
-                logger.debug(f"[method]: {method}")
-                logger.debug(f"[url]: {url}")
-                logger.debug(f"[params]: {params}")
-                logger.debug(f"[data]: {data}")
-                logger.debug(f"[headers]: {headers}")
-                logger.debug(f"[timeout]: {timeout}")
-                logger.debug(f"[kwargs]: {kwargs}")
-                logger.debug(f"[proxy]: {kwargs.get('proxy')}")
-                logger.debug(f"[code]: {code}")
-                logger.debug(f"[result]: {result}")
-                logger.debug("<<--------[SUCCESS]---------")
+                logger.verbose("--------[SUCCESS]--------->>")
+                logger.verbose(f"[method]: {method}")
+                logger.verbose(f"[url]: {url}")
+                logger.verbose(f"[params]: {params}")
+                logger.verbose(f"[data]: {data}")
+                logger.verbose(f"[headers]: {headers}")
+                logger.verbose(f"[timeout]: {timeout}")
+                logger.verbose(f"[kwargs]: {kwargs}")
+                logger.verbose(f"[proxy]: {kwargs.get('proxy')}")
+                logger.verbose(f"[code]: {code}")
+                logger.verbose(f"[result]: {result}")
+                logger.verbose("<<--------[SUCCESS]---------")
                 return code, result, None
 
         except Exception as e:
             error_type = type(e)
-            error = str(e)
+            if error_type is asyncio.TimeoutError:
+                error = f"[asyncio.TimeoutError] 请求超时...."
+            else:
+                error = str(e)
+            if not error:
+                error = f"[未知错误] 没有错误内容...."
             try:
                 code
             except:
@@ -236,7 +242,7 @@ class Requests(object):
     _SESSIONS = {}  # {"domain-name": session, ... }
 
     @classmethod
-    def ensure_req(cls, url, method="GET", retry_times=1, timeout=10, **kwargs):
+    def ensure_req(cls, url, method="GET", retry_times=1, timeout=15, **kwargs):
         """ Retry asyncio request
         Function: 重试多次请求, 确保访问正常
         Tips:
@@ -250,7 +256,7 @@ class Requests(object):
                     logger.info("====================================================")
                     logger.info(f"[网络请求异常] 尝试第 {i} 次访问....")
                     logger.info("====================================================")
-                    time.sleep(1)
+                    time.sleep(3)
                 code, success, error = cls.req(method=method, url=url, timeout=timeout, **kwargs)
                 if error:
                     raise IOError(error)
@@ -260,15 +266,15 @@ class Requests(object):
                     error = json.loads(str(e))
                 except:
                     error = str(e)
-                logger.debug(error)
-                logger.debug(f"[Req Error] ({i}/{retry_times} retry request)")
+                logger.warning(error)
+                logger.warning(f"[Req Error] ({i}/{retry_times} retry request)")
             i += 1
         return code, None, error
 
 
 
     @classmethod
-    def req(cls, method="GET", url="", params={}, data=None, headers={}, timeout=10, **kwargs):
+    def req(cls, url, method="GET", params={}, data=None, headers={}, timeout=15, **kwargs):
         """ Create a HTTP request.
 
         Args:
@@ -281,7 +287,8 @@ class Requests(object):
 
             **kwargs:
                 cookies: pass
-                proxy: HTTP proxy. (no proxy need to pass None, not "")
+                proxy: don't have this parameter, the correct parameter is `proxies` (为了和aio_req的参数统一, 保留在这)
+                proxies: <dict>; eg: {"http" : "http://127.0.0.1:7890"}
                 auth: pass; (default is None)
                 allow_redirects: (default is True)
                 verify_ssl: pass
@@ -298,6 +305,7 @@ class Requests(object):
 
         Notices:
             1. data: if `data` is not passed, must be `None`, can not be `{}`. [Careful!!]
+            2. params: can merged into `url` parameter (so `params` is always empty)
 
         Tips:
             1. 对请求过程做了完备的异常处理 (预期内和预期外都做了捕获)
@@ -305,6 +313,14 @@ class Requests(object):
                     <class 'OSError'>: 预期内的异常
                     <class 'Exception'>: 预期外的异常
         """
+        # 为了统一 (待删)
+        if "proxy" in kwargs.keys():
+            proxy = kwargs.pop("proxy")
+            if isinstance(proxy, str):
+                if proxy.split("://")[0] == "https":
+                    kwargs["proxies"] = {"https":proxy}
+                elif proxy.split("://")[0] == "http":
+                    kwargs["proxies"] = {"http":proxy}
         session = cls._get_session(url)
         try:
             if method.upper() == "GET":
@@ -331,23 +347,28 @@ class Requests(object):
                     result = response.json()
                 except:
                     result = response.text
-                logger.debug("--------[SUCCESS]--------->>")
-                logger.debug(f"[method]: {method}")
-                logger.debug(f"[url]: {url}")
-                logger.debug(f"[params]: {params}")
-                logger.debug(f"[data]: {data}")
-                logger.debug(f"[headers]: {headers}")
-                logger.debug(f"[timeout]: {timeout}")
-                logger.debug(f"[kwargs]: {kwargs}")
-                logger.debug(f"[proxy]: {kwargs.get('proxy')}")
-                logger.debug(f"[code]: {code}")
-                logger.debug(f"[result]: {result}")
-                logger.debug("<<--------[SUCCESS]---------")
+                logger.verbose("--------[SUCCESS]--------->>")
+                logger.verbose(f"[method]: {method}")
+                logger.verbose(f"[url]: {url}")
+                logger.verbose(f"[params]: {params}")
+                logger.verbose(f"[data]: {data}")
+                logger.verbose(f"[headers]: {headers}")
+                logger.verbose(f"[timeout]: {timeout}")
+                logger.verbose(f"[kwargs]: {kwargs}")
+                logger.verbose(f"[proxies]: {kwargs.get('proxies')}")
+                logger.verbose(f"[code]: {code}")
+                logger.verbose(f"[result]: {result}")
+                logger.verbose("<<--------[SUCCESS]---------")
                 return code, result, None
 
         except Exception as e:
             error_type = type(e)
-            error = str(e)
+            if error_type is requests.ReadTimeout:
+                error = f"[requests.ReadTimeout] 请求超时...."
+            else:
+                error = str(e)
+            if not error:
+                error = f"[未知错误] 没有错误内容...."
             try:
                 code
             except:
@@ -362,7 +383,7 @@ class Requests(object):
             logger.warning(f"[headers]: {headers}")
             logger.warning(f"[timeout]: {timeout}")
             logger.warning(f"[kwargs]: {kwargs}")
-            logger.warning(f"[proxy]: {kwargs.get('proxy')}")
+            logger.warning(f"[proxies]: {kwargs.get('proxies')}")
             logger.warning("<<--------[ERROR]---------")
             return 400, None, error
 
@@ -396,11 +417,7 @@ class UtilsRequests():
     def  __init__(self):
         pass
 
-
-
 utils_requests = UtilsRequests()
-
-
 
 
 
@@ -454,6 +471,7 @@ async def test_AsyncRequests():
 
     # # CASE4:
     url = "http://127.0.0.1:8008/assets?user=LSH&marketplace=BN_SPOT"
+    # c, s, e = await AsyncRequests.ensure_aio_req(url=url, timeout=0.001)
     c, s, e = await AsyncRequests.ensure_aio_req(url=url)
     print(c)
     print(s)
@@ -466,10 +484,12 @@ def test_Requests():
 
     # Case1
     url = "http://127.0.0.1:8008/assets?user=LSH&marketplace=BN_SPOT"
+    # c, s, e = Requests.ensure_req(url=url, timeout=0.001)
     c, s, e = Requests.ensure_req(url=url)
     print(c)
     print(s)
     print(e)
+
 
 
 

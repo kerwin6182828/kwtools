@@ -162,7 +162,7 @@ __all__ = [
     "kw_py1", "kw_py2", "kw_pd1", "kw_pd2", "kw_req1", "kw_req2", "kw_encrypt",
     "py1", "py2", "pd1", "pd2", "req1", "req2", "en1",
     # 3. 常用变量/函数
-    "home_path", "myRequest", "req", "AsyncRequests", "retry_func",
+    "home_path", "myRequest", "req", "AsyncRequests", "Requests",
     # 4. 测试变量
     "l", "d", "od", "obj",
     "df", "df1", "df2",
