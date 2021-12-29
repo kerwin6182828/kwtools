@@ -2,8 +2,6 @@
 # shell命令相关
 alias ll="ls -al"
 
-
-
 # brew 的相关配置
 export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles
 export PATH=$PATH:/usr/local/Cellar/python/3.7.6_1/bin
@@ -36,17 +34,12 @@ export GOPATH=/Users/kerwin/go
 export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOBIN
 
-# oracle
-# export ORACLE_HOME="/Users/kerwin/work"
-# export PATH=$PATH:$ORACLE_HOME
-
 # nvim
 alias v="nvim"
 
-# =======================================
-# => Proxy Settings
-# =======================================
+
 # 代理设置
+# =======================================
 url=http://127.0.0.1:7890
 # 如果代理失效的话直接运行 poff 即可断开 proxy
 alias poff='unset http_proxy;unset https_proxy'
@@ -54,5 +47,9 @@ alias poff='unset http_proxy;unset https_proxy'
 alias pon='export http_proxy=$url; export https_proxy=$url'
 
 
-
+# 设置文件同时开启的最大上限
 ulimit -n 65535
+
+
+# 快捷命令
+alias t="tail -f -n 300"

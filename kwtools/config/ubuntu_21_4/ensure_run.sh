@@ -8,9 +8,9 @@ run_modules=(
     "calculate"
     "account"
     "signal"
-    # "quotation"
-    # "risk"
-    "output_fi"
+    "quotation"
+    "risk"
+    "persistence"
 )
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -47,7 +47,7 @@ while true; do
     signal_module_pid=`ps -ef | grep signals.py | grep -v "grep" | awk '{print $2}'`
     quotation_module_pid=`ps -ef | grep quotation.py | grep -v "grep" | awk '{print $2}'`
     risk_module_pid=`ps -ef | grep risk.py | grep -v "grep" | awk '{print $2}'`
-    output_fi_pid=`ps -ef | grep output_fi_prdl.py | grep -v "grep" | awk '{print $2}'`
+    persistence_module_pid=`ps -ef | grep persistence.py | grep -v "grep" | awk '{print $2}'`
 
     for module in ${run_modules[@]}; do
         echo -e "正在监控 ${module} 模块..."
@@ -100,11 +100,11 @@ while true; do
             sleep 2
         fi
 
-        # 7. output_financial_statements脚本
-        if [[ ${module} == 'output_fi' && ! ${output_fi_pid} ]]; then
+        # 7. persistence模块
+        if [[ ${module} == 'persistence' && ! ${persistence_module_pid} ]]; then
             datetime=$(date +"%Y-%m-%d %H:%M:%S")
-            echo -e "[${datetime}] 检测到'output'脚本已经终止, 重新启动中...\n\n"
-            nohup python3 -u "${kw_arb_path}/v2_5/scripts/output_fi_prdl.py" > ~/log/output_fi.log &
+            echo -e "[${datetime}] 检测到'persistence'模块已经终止, 重新启动中...\n\n"
+            nohup python3 -u "${kw_arb_path}/v2_5/persistence.py" > ~/log/persistence.log &
             sleep 2
         fi
     done

@@ -140,6 +140,8 @@ alias redis="sudo docker exec -it lc_redis redis-cli"
 # 设置文件同时开启的最大上限
 ulimit -n 65535
 
+# 快捷命令
+alias t="tail -f -n 300"
 
 
 

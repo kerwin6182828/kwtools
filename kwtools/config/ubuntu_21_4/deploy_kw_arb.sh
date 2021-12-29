@@ -21,7 +21,7 @@ chmod +x init_user.sh
 source init_user.sh
 # 本地端操作 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 remote_ip="18.183.104.223" # 需要更新ip
-remote_user="kerwin" # 需要更新用户名
+remote_user="mirror" # 需要更新用户名
 ssh-copy-id ${remote_user}@${remote_ip}
 # 输入用户密码, 之后就可以免密登录了
 
@@ -39,30 +39,62 @@ ssh-copy-id ${remote_user}@${remote_ip}
 
 
 # 5. 上传 kw_arb项目的配置文件
-mkdir ~/kw_arb/kw_arb/secret
 # 本地端操作 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 1. config.py
 scp -r ~/box/kw_arb/kw_arb/v2_5/config.py ${remote_user}@${remote_ip}:~/kw_arb/kw_arb/v2_5/config.py
 # 2. secret.py
-scp -r ~/box/kw_arb/kw_arb/secret/secret.py ${remote_user}@${remote_ip}:~/kw_arb/kw_arb/secret/secret.py
+scp -r ~/box/kw_arb/kw_arb/v2_5/account_modules/secret.py ${remote_user}@${remote_ip}:~/kw_arb/kw_arb/v2_5/account_modules/secret.py
+# 3. m_config.py
+scp -r ~/box/kw_arb/market_monitor/src/monitors/m_config.py ${remote_user}@${remote_ip}:~/kw_arb/market_monitor/src/monitors/m_config.py
+# 4. operate.py
+scp -r ~/box/kw_arb/kw_arb/v2_5/operate.py ${remote_user}@${remote_ip}:~/kw_arb/kw_arb/v2_5/operate.py
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
+# 软链接: (远程端操作)
+ln -s ~/kw_arb/kw_arb/v2_5/config.py ~/config.py
+ln -s ~/kw_arb/market_monitor/src/monitors/m_config.py ~/m_config.py
+ln -s ~/kw_arb/kw_arb/v2_5/operate.py ~/operate.py
+# 执行操盘:
+python operate.py
 
 
 # 6. 添加数据库索引
+# ===============================================
 # i. 进入mongo
 sudo docker exec -it lc_mongodb mongo -ulc -plc123456
 # ii. 切换数据库
 use lc_market_data
-db.dropDatabase(); # 清空当前数据库
+db.dropDatabase();
+use lc_account_data
+db.dropDatabase();
 # iii. 创建索引
-db.funding_rate.createIndex({"lc_symbol":1, "local_timestamp_ms":1, "period_m":1, "period_h":1, "period_d":1}, {"unique":true})
-db.open_vspread_rate.createIndex({"spread_symbol":1, "local_timestamp_ms":1, "period_m":1, "period_h":1, "period_d":1}, {"unique":true})
-db.close_vspread_rate.createIndex({"spread_symbol":1, "local_timestamp_ms":1, "period_m":1, "period_h":1, "period_d":1}, {"unique":true})
-# iv. 展示索引
+use lc_market_data
+db.funding_rate.createIndex({"lc_symbol":1, "datetime":1}, {"unique":true})
+db.open_vspread_rate.createIndex({"spread_symbol":1, "datetime":1}, {"unique":true})
+db.close_vspread_rate.createIndex({"spread_symbol":1, "datetime":1}, {"unique":true})
 db.funding_rate.getIndexes();
 db.open_vspread_rate.getIndexes();
 db.close_vspread_rate.getIndexes();
+
+use lc_account_data
+db.sum.createIndex({"user":1, "datetime":1}, {"unique":true})
+db.hedge.createIndex({"user":1, "datetime":1}, {"unique":true})
+db.u_s_pos.createIndex({"user":1, "datetime":1}, {"unique":true})
+db.u_l_pos.createIndex({"user":1, "datetime":1}, {"unique":true})
+db.u_both_pos.createIndex({"user":1, "datetime":1}, {"unique":true})
+db.assets.createIndex({"lc_symbol":1, "datetime":1}, {"unique":true})
+db.uswap_risk.createIndex({"user":1, "datetime":1}, {"unique":true})
+db.cro_risk.createIndex({"user":1, "datetime":1}, {"unique":true})
+db.iso_risk.createIndex({"user":1, "datetime":1}, {"unique":true})
+db.sum.getIndexes();
+db.hedge.getIndexes();
+db.u_s_pos.getIndexes();
+db.u_l_pos.getIndexes();
+db.u_both_pos.getIndexes();
+db.assets.creatgetIndexes();
+db.uswap_risk.getIndexes();
+db.cro_risk.getIndexes();
+db.iso_risk.getIndexes();
+
 exit
 
 
@@ -74,7 +106,11 @@ chmod +x ~/kwtools.sh
 source ~/kwtools.sh
 # 启动项目的入口脚本 (使用bash脚本, 一键启动所有模块在后台执行, 并将日志文件输出到~/log目录下)
 wget -O ensure_run.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/ensure_run.sh"
+wget -O show_kw_arb.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/show_kw_arb.sh"
+wget -O kill_kw_arb.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/kill_kw_arb.sh"
 chmod +x ~/ensure_run.sh
+chmod +x ~/show_kw_arb.sh
+chmod +x ~/kill_kw_arb.sh
 ensure_file ~/log folder
 nohup ~/ensure_run.sh > ~/log/ensure_run.log & # 如果用nohup, 相当于就是用bash执行shell脚本了(不需要再加source了)
 # 还需要启动一个交互的窗口 (smm)
@@ -93,7 +129,7 @@ ps aux | grep account.py
 ps aux | grep signals.py
 ps aux | grep quotation.py
 ps aux | grep risk.py
-ps aux | grep output_fi_prdl.py
+ps aux | grep persistence.py
 
 
 
@@ -105,7 +141,7 @@ tail -f -n 300 ~/log/account.log # 账户模块
 tail -f -n 300 ~/log/signal.log
 tail -f -n 300 ~/log/quotation.log
 tail -f -n 300 ~/log/risk.log
-tail -f -n 200 ~/log/output_fi.log
+tail -f -n 200 ~/log/persistence.log
 
 
 # kill所有后台启动的进程
@@ -116,7 +152,7 @@ kill `ps -ef | grep account.py | grep -v "grep" | awk '{print $2}'`
 kill `ps -ef | grep signals.py | grep -v "grep" | awk '{print $2}'`
 kill `ps -ef | grep quotation.py | grep -v "grep" | awk '{print $2}'`
 kill `ps -ef | grep risk.py | grep -v "grep" | awk '{print $2}'`
-kill `ps -ef | grep output_fi_prdl.py | grep -v "grep" | awk '{print $2}'`
+kill `ps -ef | grep persistence.py | grep -v "grep" | awk '{print $2}'`
 
 
 # 8. 卸载kw_arb项目, 重装
@@ -126,3 +162,8 @@ rm -rf ~/lcquant
 git clone -b kw-dev https://github.com/Adolf-L/lcquant.git
 pip uninstall kwtools
 pip install kwtools==0.1.4
+
+
+# 9. 导出远程端的excel表格
+scp -r mirror@18.183.104.223:~/outputs/2021-12-23_16_友幸_财务报表.xlsx ~/Desktop
+scp -r mirror@18.183.104.223:~/outputs/2021-12-28_17_友幸_财务报表.xlsx ~/Desktop/outputs
