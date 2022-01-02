@@ -86,7 +86,7 @@ install_python_packages(){
     echo -e "${yellow}[INFO]:${plain} 正在为${user_name}用户使用pip安装python库..."
     for python_package in ${python_package_array[@]}; do
         echo -e "正在pip安装 ${python_package} ..."
-        
+
         # 1. kwtools
         if [ ${python_package} == 'kwtools' ]; then
             echo -e "${yellow}[INFO]:${plain} Installing kwtools....."

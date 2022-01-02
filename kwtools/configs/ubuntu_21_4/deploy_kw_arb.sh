@@ -26,28 +26,16 @@ ssh-copy-id ${remote_user}@${remote_ip}
 # 输入用户密码, 之后就可以免密登录了
 
 
-# # 4. 上传二封的vnpy
-# # 本地端操作 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# cd /usr/local/lib/python3.9/site-packages/vnpy-2.1.9-py3.9.egg
-# tar zcvf vnpy.tar.gz vnpy # 压缩
-# scp -r ./vnpy.tar.gz ${remote_user}@${remote_ip}:~/site-packages
-# # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-# cd ~/site-packages
-# tar zxvf vnpy.tar.gz # 解压
-# pip install peewee --user pkg # vnpy的依赖库
-# pip install websocket-client --user pkg # vnpy的依赖库
-
-
-# 5. 上传 kw_arb项目的配置文件
+# 4. 上传 kw_arb项目的`配置文件`
 # 本地端操作 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# 1. config.py
-scp -r ~/box/kw_arb/kw_arb/v2_5/config.py ${remote_user}@${remote_ip}:~/kw_arb/kw_arb/v2_5/config.py
+# 1. settings.py
+scp -r ~/box/kw_arb/kw_arb/configs/settings.py ${remote_user}@${remote_ip}:~/kw_arb/kw_arb/configs/settings.py
 # 2. secret.py
-scp -r ~/box/kw_arb/kw_arb/v2_5/account_modules/secret.py ${remote_user}@${remote_ip}:~/kw_arb/kw_arb/v2_5/account_modules/secret.py
+scp -r ~/box/kw_arb/kw_arb/src/modules/account_modules/secret.py ${remote_user}@${remote_ip}:~/kw_arb/kw_arb/src/modules/account_modules/secret.py
 # 3. m_config.py
 scp -r ~/box/kw_arb/market_monitor/src/monitors/m_config.py ${remote_user}@${remote_ip}:~/kw_arb/market_monitor/src/monitors/m_config.py
 # 4. operate.py
-scp -r ~/box/kw_arb/kw_arb/v2_5/operate.py ${remote_user}@${remote_ip}:~/kw_arb/kw_arb/v2_5/operate.py
+scp -r ~/box/kw_arb/kw_arb/src/modules/operate.py ${remote_user}@${remote_ip}:~/kw_arb/kw_arb/src/modules/operate.py
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 # 软链接: (远程端操作)
 ln -s ~/kw_arb/kw_arb/v2_5/config.py ~/config.py
@@ -57,7 +45,7 @@ ln -s ~/kw_arb/kw_arb/v2_5/operate.py ~/operate.py
 python operate.py
 
 
-# 6. 添加数据库索引
+# 5. 添加数据库索引
 # ===============================================
 # i. 进入mongo
 sudo docker exec -it lc_mongodb mongo -ulc -plc123456
@@ -77,14 +65,14 @@ db.close_vspread_rate.getIndexes();
 
 use lc_account_data
 db.sum.createIndex({"user":1, "datetime":1}, {"unique":true})
-db.hedge.createIndex({"user":1, "datetime":1}, {"unique":true})
-db.u_s_pos.createIndex({"user":1, "datetime":1}, {"unique":true})
-db.u_l_pos.createIndex({"user":1, "datetime":1}, {"unique":true})
-db.u_both_pos.createIndex({"user":1, "datetime":1}, {"unique":true})
-db.assets.createIndex({"lc_symbol":1, "datetime":1}, {"unique":true})
+db.hedge.createIndex({"user":1, "asset":1, "datetime":1}, {"unique":true})
+db.u_s_pos.createIndex({"user":1, "symbol":1, "datetime":1}, {"unique":true})
+db.u_l_pos.createIndex({"user":1, "symbol":1, "datetime":1}, {"unique":true})
+db.u_both_pos.createIndex({"user":1, "symbol":1, "datetime":1}, {"unique":true})
+db.assets.createIndex({"user":1, "asset":1, "datetime":1}, {"unique":true})
 db.uswap_risk.createIndex({"user":1, "datetime":1}, {"unique":true})
 db.cro_risk.createIndex({"user":1, "datetime":1}, {"unique":true})
-db.iso_risk.createIndex({"user":1, "datetime":1}, {"unique":true})
+db.iso_risk.createIndex({"user":1, "symbol":1, "datetime":1}, {"unique":true})
 db.sum.getIndexes();
 db.hedge.getIndexes();
 db.u_s_pos.getIndexes();
@@ -98,7 +86,7 @@ db.iso_risk.getIndexes();
 exit
 
 
-# 7. 执行kw_arb项目
+# 6. 执行kw_arb项目
 cd
 # 导入工具库
 wget -O kwtools.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/kwtools.sh"
@@ -122,37 +110,39 @@ nohup ~/ensure_run.sh > ~/log/ensure_run.log & # 如果用nohup, 相当于就是
 
 
 # 查看程序是否正在执行
-ps aux | grep ensure_run.sh
-ps aux | grep market.py
-ps aux | grep calculate.py
-ps aux | grep account.py
-ps aux | grep signals.py
-ps aux | grep quotation.py
-ps aux | grep risk.py
-ps aux | grep persistence.py
-
-
-
-# 查看项目运行的日志
-tail -f -n 100 ~/log/ensure_run.log
-tail -f -n 100 ~/log/market.log #
-tail -f -n 200 ~/log/calculate.log # 价差率
-tail -f -n 300 ~/log/account.log # 账户模块
-tail -f -n 300 ~/log/signal.log
-tail -f -n 300 ~/log/quotation.log
-tail -f -n 300 ~/log/risk.log
-tail -f -n 200 ~/log/persistence.log
+source show_kw_arb.sh
+# ps aux | grep ensure_run.sh
+# ps aux | grep market.py
+# ps aux | grep calculate.py
+# ps aux | grep account.py
+# ps aux | grep signals.py
+# ps aux | grep quotation.py
+# ps aux | grep risk.py
+# ps aux | grep persistence.py
 
 
 # kill所有后台启动的进程
-kill `ps -ef | grep ensure_run.sh | grep -v "grep" | awk '{print $2}'`
-kill `ps -ef | grep market.py | grep -v "grep" | awk '{print $2}'`
-kill `ps -ef | grep calculate.py | grep -v "grep" | awk '{print $2}'`
-kill `ps -ef | grep account.py | grep -v "grep" | awk '{print $2}'`
-kill `ps -ef | grep signals.py | grep -v "grep" | awk '{print $2}'`
-kill `ps -ef | grep quotation.py | grep -v "grep" | awk '{print $2}'`
-kill `ps -ef | grep risk.py | grep -v "grep" | awk '{print $2}'`
-kill `ps -ef | grep persistence.py | grep -v "grep" | awk '{print $2}'`
+source kill_kw_arb.sh
+# kill `ps -ef | grep ensure_run.sh | grep -v "grep" | awk '{print $2}'`
+# kill `ps -ef | grep market.py | grep -v "grep" | awk '{print $2}'`
+# kill `ps -ef | grep calculate.py | grep -v "grep" | awk '{print $2}'`
+# kill `ps -ef | grep account.py | grep -v "grep" | awk '{print $2}'`
+# kill `ps -ef | grep signals.py | grep -v "grep" | awk '{print $2}'`
+# kill `ps -ef | grep quotation.py | grep -v "grep" | awk '{print $2}'`
+# kill `ps -ef | grep risk.py | grep -v "grep" | awk '{print $2}'`
+# kill `ps -ef | grep persistence.py | grep -v "grep" | awk '{print $2}'`
+
+
+# 查看项目运行的日志
+t ensure_run.log
+# tail -f -n 100 ~/log/ensure_run.log
+# tail -f -n 100 ~/log/market.log #
+# tail -f -n 200 ~/log/calculate.log # 价差率
+# tail -f -n 300 ~/log/account.log # 账户模块
+# tail -f -n 300 ~/log/signal.log
+# tail -f -n 300 ~/log/quotation.log
+# tail -f -n 300 ~/log/risk.log
+# tail -f -n 200 ~/log/persistence.log
 
 
 # 8. 卸载kw_arb项目, 重装

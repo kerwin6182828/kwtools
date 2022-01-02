@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>homebrew.mxcl.mongodb-community</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/opt/mongodb-community/bin/mongod</string>
+    <string>--dbpath=/Users/kerwin/data/db/mongodb</string>
+    <string>--wiredTigerCacheSizeGB=2</string>
+    <string>--auth</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <false/>
+  <key>WorkingDirectory</key>
+  <string>/usr/local</string>
+  <key>StandardErrorPath</key>
+  <string>/usr/local/var/log/mongodb/output.log</string>
+  <key>StandardOutPath</key>
+  <string>/usr/local/var/log/mongodb/output.log</string>
+  <key>HardResourceLimits</key>
+  <dict>
+    <key>NumberOfFiles</key>
+    <integer>64000</integer>
+  </dict>
+  <key>SoftResourceLimits</key>
+  <dict>
+    <key>NumberOfFiles</key>
+    <integer>64000</integer>
+  </dict>
+</dict>
+</plist>

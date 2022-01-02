@@ -56,7 +56,7 @@ while true; do
         if [[ ${module} == 'market' && ! ${market_module_pid} ]]; then
             datetime=$(date +"%Y-%m-%d %H:%M:%S")
             echo -e "[${datetime}] 检测到'market'模块已经终止, 重新启动中...\n\n"
-            nohup python3 -u "${kw_arb_path}/v2_5/market.py" > ~/log/market.log &
+            nohup python3 -u "${kw_arb_path}/src/modules/market.py" > ~/log/market.log &
             sleep 2
         fi
 
@@ -64,7 +64,7 @@ while true; do
         if [[ ${module} == 'calculate' && ! ${calculate_module_pid} ]]; then
             datetime=$(date +"%Y-%m-%d %H:%M:%S")
             echo -e "[${datetime}] 检测到'calculate'模块已经终止, 重新启动中...\n\n"
-            nohup python3 -u "${kw_arb_path}/v2_5/calculate.py" > ~/log/calculate.log &
+            nohup python3 -u "${kw_arb_path}/src/modules/calculate.py" > ~/log/calculate.log &
             sleep 2
         fi
 
@@ -72,7 +72,7 @@ while true; do
         if [[ ${module} == 'account' && ! ${account_module_pid} ]]; then
             datetime=$(date +"%Y-%m-%d %H:%M:%S")
             echo -e "[${datetime}] 检测到'account'模块已经终止, 重新启动中...\n\n"
-            nohup python3 -u "${kw_arb_path}/v2_5/account.py" > ~/log/account.log &
+            nohup python3 -u "${kw_arb_path}/src/modules/account.py" > ~/log/account.log &
             sleep 2
         fi
 
@@ -80,7 +80,7 @@ while true; do
         if [[ ${module} == 'signal' && ! ${signal_module_pid} ]]; then
             datetime=$(date +"%Y-%m-%d %H:%M:%S")
             echo -e "[${datetime}] 检测到'signal'模块已经终止, 重新启动中...\n\n"
-            nohup python3 -u "${kw_arb_path}/v2_5/signals.py" > ~/log/signal.log &
+            nohup python3 -u "${kw_arb_path}/src/modules/signals.py" > ~/log/signal.log &
             sleep 2
         fi
 
@@ -88,7 +88,7 @@ while true; do
         if [[ ${module} == 'quotation' && ! ${quotation_module_pid} ]]; then
             datetime=$(date +"%Y-%m-%d %H:%M:%S")
             echo -e "[${datetime}] 检测到'quotation'模块已经终止, 重新启动中...\n\n"
-            nohup python3 -u "${kw_arb_path}/v2_5/quotation.py" > ~/log/quotation.log &
+            nohup python3 -u "${kw_arb_path}/src/modules/quotation.py" > ~/log/quotation.log &
             sleep 2
         fi
 
@@ -96,7 +96,7 @@ while true; do
         if [[ ${module} == 'risk' && ! ${risk_module_pid} ]]; then
             datetime=$(date +"%Y-%m-%d %H:%M:%S")
             echo -e "[${datetime}] 检测到'risk'模块已经终止, 重新启动中...\n\n"
-            nohup python3 -u "${kw_arb_path}/v2_5/risk.py" > ~/log/risk.log &
+            nohup python3 -u "${kw_arb_path}/src/modules/risk.py" > ~/log/risk.log &
             sleep 2
         fi
 
@@ -104,7 +104,7 @@ while true; do
         if [[ ${module} == 'persistence' && ! ${persistence_module_pid} ]]; then
             datetime=$(date +"%Y-%m-%d %H:%M:%S")
             echo -e "[${datetime}] 检测到'persistence'模块已经终止, 重新启动中...\n\n"
-            nohup python3 -u "${kw_arb_path}/v2_5/persistence.py" > ~/log/persistence.log &
+            nohup python3 -u "${kw_arb_path}/src/modules/persistence.py" > ~/log/persistence.log &
             sleep 2
         fi
     done

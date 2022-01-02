@@ -1,0 +1,95 @@
+{
+    "atomKeymap.promptV3Features": true,
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.editor.enablePreview": false,
+    "window.zoomLevel": 0,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "vsicons.dontShowNewVersionMessage": true,
+    "explorer.confirmDelete": false,
+    "liveServer.settings.donotShowInfoMsg": true,
+
+    // 编辑器相关
+    "editor.fontSize": 14,
+    "editor.detectIndentation": false,
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.formatOnPaste": false,
+
+    // 其他底层配置
+    "git.autofetch": true,
+    "sync.gist": "ae898e1586865efd6832367bc3d6d275",
+
+    // 终端相关
+    "terminal.integrated.shell.osx": "/bin/zsh",
+    "terminal.integrated.rendererType": "dom",
+
+    // python相关
+    "python.dataScience.debugJustMyCode": false,
+    "python.linting.enabled": false,
+    "python.linting.lintOnSave": false,
+    "python.linting.pylintUseMinimalCheckers": false,
+    "python.linting.pylintEnabled": false,
+    "[python]": {
+
+    },
+    "python.pythonPath": "/usr/local/opt/python/bin/python3.7",
+
+    // 各种语言的格式化设置
+    "[html]": {
+        "editor.defaultFormatter": "lonefy.vscode-JS-CSS-HTML-formatter"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "HookyQR.beautify"
+    },
+    // vue语法规范检查
+    "vetur.format.options.tabSize": 4,
+    "vetur.validation.template": false,
+
+
+    // MarkDown相关
+    "markdown-preview-enhanced.liveUpdate": false,
+    "markdown.extension.preview.autoShowPreviewToSide": true,
+    "markdown.extension.print.theme": "dark",
+
+
+    // vim相关
+    "vim.useSystemClipboard": true,
+    "vim.highlightedyank.color": "rgba(250, 0, 0, 1)",
+    "vim.highlightedyank.duration": 700,
+    "vim.highlightedyank.enable": true,
+    "vim.highlightedyank.textColor": "rgba(0, 250, 0, 1)",
+    "vim.hlsearch": true,
+    "vim.searchHighlightColor": "rgba(250, 0, 0, 1)",
+    "vim.searchHighlightTextColor": "rgba(0, 250, 0, 1)",
+    "vim.visualstar": true,
+    "vim.easymotion": true,
+    "vim.leader": "<space>",
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+            // 一个空格, 等于两个空格
+          "before": ["<space>"],
+          "after": ["<leader>", "<leader>"]
+        },
+    ],
+    "workbench.editorAssociations": {
+        "*.ipynb": "jupyter-notebook"
+    },
+    "workbench.startupEditor": "newUntitledFile",
+    "python.showStartPage": false,
+    "terminal.integrated.automationShell.linux": "",
+    "terminal.integrated.scrollback": 100000,
+    // "python.languageServer": "Microsoft",
+    // "python.languageServer": "Jedi",
+    "python.languageServer": "Pylance",
+    "python.defaultInterpreterPath": "/usr/local/opt/python/bin/python3.7",
+    "notebook.cellToolbarLocation": {
+        "default": "right",
+        "jupyter-notebook": "left"
+    },
+    "security.workspace.trust.untrustedFiles": "open",
+    "jupyter.debugJustMyCode": false,
+    "C_Cpp.workspaceSymbols": "All",
+    "files.autoSave": "afterDelay",
+    "editor.copyWithSyntaxHighlighting": false,
+    "workbench.colorTheme": "Atom One Dark",
+
+}

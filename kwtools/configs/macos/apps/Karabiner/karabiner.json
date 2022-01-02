@@ -1112,6 +1112,22 @@
                             },
 							{
                                 "from": {
+                                    "key_code": "x",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_command"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "open -a Firefox"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+							{
+                                "from": {
                                     "key_code": "a",
                                     "modifiers": {
                                         "mandatory": [
@@ -1137,7 +1153,7 @@
                                 },
                                 "to": [
                                     {
-                                        "shell_command": "open ~"
+                                        "shell_command": "open -a Finder"
                                     }
                                 ],
                                 "type": "basic"
@@ -1202,6 +1218,22 @@
                                 "to": [
                                     {
                                         "shell_command": "open -a Terminal"
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+							{
+                                "from": {
+                                    "key_code": "d",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "right_command"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "shell_command": "open -a Discord"
                                     }
                                 ],
                                 "type": "basic"

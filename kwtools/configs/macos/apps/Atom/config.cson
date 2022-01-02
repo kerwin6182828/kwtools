@@ -1,0 +1,52 @@
+"*":
+  "atom-python-run":
+    f5Command: "ipython3 {file}"
+    terminal: [
+      "/bin/zsh"
+    ]
+  autosave:
+    enabled: true
+  core:
+    closeEmptyWindows: false
+    disabledPackages: [
+      "markdown-preview"
+    ]
+    telemetryConsent: "no"
+  editor:
+    fontSize: 12
+    scrollPastEnd: true
+    tabLength: 4
+  "exception-reporting":
+    userId: "4ed20032-77f8-46fb-b122-b33b140ffdf2"
+  "markdown-preview":
+    breakOnSingleNewline: true
+  "markdown-preview-plus":
+    codeTabWidth: 4
+    importPackageStyles: [
+      "*"
+    ]
+    markdownItConfig:
+      breakOnSingleNewline: true
+      parseDisplayMathInline: true
+      tableCaptions: true
+      tocDepth: 4
+      useToc: true
+    mathConfig:
+      latexRenderer: "HTML-CSS"
+    pandocConfig: {}
+    previewConfig:
+      activatePreviewWithEditor: true
+    saveConfig:
+      defaultSaveFormat: "pdf"
+      makePDFOverwrite: true
+      openOnSave:
+        pdf: true
+      saveToPDFOptions:
+        styleOverride: "none"
+    syncConfig: {}
+    syntaxThemeName: "atom-dark-ui"
+  "tree-view": {}
+  "vim-mode-plus":
+    ignoreCaseForSearch: true
+  welcome:
+    showOnStartup: false

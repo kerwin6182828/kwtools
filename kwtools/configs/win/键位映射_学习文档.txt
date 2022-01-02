@@ -1,0 +1,42 @@
+1. 先在注册表中修改4个映射： 如右边的文件
+2. 用AHK： 自定义方向键+alttab键+删除+home+F4
+
+
+键盘机器码如下：
+Caps Lock           00 3A
+Left Shift             00 2A
+Left Ctrl               00 1D
+Left Windows      E0 5B
+Left Alt                00 38
+Right Alt              E0 38
+Right Ctrl             E0 1D
+Right Windows    E0 5C
+
+Windows Registry Editor Version 5.00
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout]
+"Scancode Map"=hex:00,00,00,00,00,00,00,00,02,00,00,00,##,##,##,##,00,00,00,00 
+
+
+如果想要让 Left Alt 映射成 Left Ctrl： 
+##,##,##,## 改成： 1D,00,38,00
+(后两个##代表：原键位； 前两个##代表：目标键位)
+（单个键位在注册表中的表示顺序需要前后倒序一下）（我也不知道为啥。。。）
+
+
+
+所以，Left Alt ---> Left Ctrl， Left Ctrl ---> Left Alt， Caps Lock ---> Right Alt， 注册表代码如下：
+Left Alt ---> Left Ctrl:                     1D,00,38,00
+Left Ctrl ---> Left Alt:                     38,00,1D,00
+Caps Lock ---> Right Alt:               38,E0,3A,00 
+
+完整代码如下：
+Windows Registry Editor Version 5.00
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout]
+"Scancode Map"=hex:00,00,00,00,00,00,00,00,02,00,00,00,1D,00,38,00,38,00,1D,00,38,E0,3A,00,00,00,00,00
+
+将上面这段代码写入文本文件， 并用.reg作为后缀， 并双击执行， 重启后就可完成“注册表层级的键位映射”！！！
+
+
+
+
+
