@@ -63,15 +63,15 @@ add_user_config(){
     cd ${home_path}
 
     # 添加.bashrc
-    wget -O .bashrc "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/bashrc" && \
+    wget -O .bashrc "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/configs/ubuntu_21_4/bashrc" && \
     source .bashrc
 
     # 添加.vimrc
-    wget -O .vimrc "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/vimrc" && \
+    wget -O .vimrc "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/configs/ubuntu_21_4/vimrc" && \
     source .vimrc
 
     # 添加kwtools.sh
-    wget -O kwtools.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/kwtools.sh" && \
+    wget -O kwtools.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/configs/ubuntu_21_4/kwtools.sh" && \
     chmod +x kwtools.sh
 }
 

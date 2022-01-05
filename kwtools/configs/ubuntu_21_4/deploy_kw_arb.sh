@@ -3,7 +3,7 @@
 # ===========================================================================================================
 
 # 1. 下载'初始化ubunut'的shell脚本, 并执行
-wget -O init_ubuntu.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/init_ubuntu.sh"
+wget -O init_ubuntu.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/configs/ubuntu_21_4/init_ubuntu.sh"
 vim init_ubuntu.sh # 1. 修改配置内容(用户信息)
 chmod +x init_ubuntu.sh
 source init_ubuntu.sh
@@ -15,13 +15,13 @@ cd
 
 
 # 3. 下载'初始化user'的shell脚本, 并执行
-wget -O init_user.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/init_user.sh"
+wget -O init_user.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/configs/ubuntu_21_4/init_user.sh"
 vim init_user.sh # 修改配置内容 (必填: PAT)
 chmod +x init_user.sh
 source init_user.sh
 # 本地端操作 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-remote_ip="18.183.104.223" # 需要更新ip
-remote_user="mirror" # 需要更新用户名
+remote_ip="45.63.120.150" # 需要更新ip
+remote_user="kerwin" # 需要更新用户名
 ssh-copy-id ${remote_user}@${remote_ip}
 # 输入用户密码, 之后就可以免密登录了
 
@@ -38,9 +38,9 @@ scp -r ~/box/kw_arb/market_monitor/src/monitors/m_config.py ${remote_user}@${rem
 scp -r ~/box/kw_arb/kw_arb/src/modules/operate.py ${remote_user}@${remote_ip}:~/kw_arb/kw_arb/src/modules/operate.py
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 # 软链接: (远程端操作)
-ln -s ~/kw_arb/kw_arb/v2_5/config.py ~/config.py
+ln -s ~/kw_arb/kw_arb/configs/settings.py ~/settings.py
 ln -s ~/kw_arb/market_monitor/src/monitors/m_config.py ~/m_config.py
-ln -s ~/kw_arb/kw_arb/v2_5/operate.py ~/operate.py
+ln -s ~/kw_arb/kw_arb/src/modules/operate.py ~/operate.py
 # 执行操盘:
 python operate.py
 
@@ -155,5 +155,6 @@ pip install kwtools==0.1.4
 
 
 # 9. 导出远程端的excel表格
-scp -r mirror@18.183.104.223:~/outputs/2021-12-23_16_友幸_财务报表.xlsx ~/Desktop
-scp -r mirror@18.183.104.223:~/outputs/2021-12-28_17_友幸_财务报表.xlsx ~/Desktop/outputs
+scp -r mirror@45.63.120.150:~/outputs/2021-12-23_16_友幸_财务报表.xlsx ~/Desktop
+scp -r mirror@45.63.120.150:~/outputs/2021-12-28_17_友幸_财务报表.xlsx ~/Desktop/outputs
+scp -r mirror@45.63.120.150:~/outputs/2022-01-03_09_友幸_财务报表.xlsx ~/Desktop/outputs
