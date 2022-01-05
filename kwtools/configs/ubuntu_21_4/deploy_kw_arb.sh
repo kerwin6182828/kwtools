@@ -38,6 +38,7 @@ scp -r ~/box/kw_arb/market_monitor/src/monitors/m_config.py ${remote_user}@${rem
 scp -r ~/box/kw_arb/kw_arb/src/modules/operate.py ${remote_user}@${remote_ip}:~/kw_arb/kw_arb/src/modules/operate.py
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 # 软链接: (远程端操作)
+cd
 ln -s ~/kw_arb/kw_arb/configs/settings.py ~/settings.py
 ln -s ~/kw_arb/market_monitor/src/monitors/m_config.py ~/m_config.py
 ln -s ~/kw_arb/kw_arb/src/modules/operate.py ~/operate.py
@@ -89,13 +90,13 @@ exit
 # 6. 执行kw_arb项目
 cd
 # 导入工具库
-wget -O kwtools.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/kwtools.sh"
+wget -O kwtools.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/configs/ubuntu_21_4/kwtools.sh"
 chmod +x ~/kwtools.sh
 source ~/kwtools.sh
 # 启动项目的入口脚本 (使用bash脚本, 一键启动所有模块在后台执行, 并将日志文件输出到~/log目录下)
-wget -O ensure_run.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/ensure_run.sh"
-wget -O show_kw_arb.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/show_kw_arb.sh"
-wget -O kill_kw_arb.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/config/ubuntu_21_4/kill_kw_arb.sh"
+wget -O ensure_run.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/configs/ubuntu_21_4/ensure_run.sh"
+wget -O show_kw_arb.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/configs/ubuntu_21_4/show_kw_arb.sh"
+wget -O kill_kw_arb.sh "https://raw.githubusercontent.com/kerwin6182828/kwtools/main/kwtools/configs/ubuntu_21_4/kill_kw_arb.sh"
 chmod +x ~/ensure_run.sh
 chmod +x ~/show_kw_arb.sh
 chmod +x ~/kill_kw_arb.sh
