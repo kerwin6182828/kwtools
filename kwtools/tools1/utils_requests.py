@@ -140,7 +140,7 @@ class myRequest():
         # logger.log(logging.DEBUG, "req 已发出..\n")
         if req_method.lower() == "get":
             res_obj = requests.get(url, headers=headers,proxies=proxies, auth=auth, timeout=timeout, allow_redirects=allow_redirects, **kwargs)
-        # 下面的 data参数 必须要先用json.dumps()转成str后，才能发送请求！！！ //k200628: 不需要转成json啊, 直接用dict类型就能传入请求啊
+        # 下面的 data参数 必须要先用json.dumps()转成str后，才能发送请求！！！ //k200628: 不需要转成json啊, 直接用dict类型就能传入请求啊 // 22年0117日: data参数直接传dict不行啊!!!还是要dumps()
         elif req_method.lower() == "post":
             res_obj = requests.post(url, headers=headers,proxies=proxies, data=data, timeout=timeout, allow_redirects=allow_redirects, **kwargs)
         elif req_method.lower() == "put":

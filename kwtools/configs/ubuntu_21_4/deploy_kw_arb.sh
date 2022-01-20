@@ -101,7 +101,7 @@ chmod +x ~/ensure_run.sh
 chmod +x ~/show_kw_arb.sh
 chmod +x ~/kill_kw_arb.sh
 ensure_file ~/log folder
-nohup ~/ensure_run.sh > ~/log/ensure_run.log & # 如果用nohup, 相当于就是用bash执行shell脚本了(不需要再加source了)
+nohup ~/ensure_run.sh > ~/log/ensure_run.log &
 # 还需要启动一个交互的窗口 (smm)
 # (进入iterm)
 # from kw_arb import *
@@ -159,3 +159,9 @@ pip install kwtools==0.1.4
 scp -r mirror@45.63.120.150:~/outputs/2021-12-23_16_友幸_财务报表.xlsx ~/Desktop
 scp -r mirror@45.63.120.150:~/outputs/2021-12-28_17_友幸_财务报表.xlsx ~/Desktop/outputs
 scp -r mirror@45.63.120.150:~/outputs/2022-01-03_09_友幸_财务报表.xlsx ~/Desktop/outputs
+
+
+
+# 10. 连接服务器的 jupyter notebook
+nohup jupyter notebook --allow-root > ~/log/jupyter.log &
+# 得到带token的连接url: http://45.63.120.150:8888/?token=7d0b517ea76af9f0501235c36e643e485debbfc7de7ff9fe

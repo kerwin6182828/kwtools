@@ -17,6 +17,9 @@ set -u # 设置shell执行方式 (当执行时使用到未定义过的变量，�
 # 需要pip安装的python库
 python_package_array=(
     "kwtools"
+    "jupyter"
+    "matplotlib"
+    "python-highcharts"
     # "talib"
 )
 # 需要部署项目的github路径
@@ -87,13 +90,8 @@ install_python_packages(){
     for python_package in ${python_package_array[@]}; do
         echo -e "正在pip安装 ${python_package} ..."
 
-        # 1. kwtools
-        if [ ${python_package} == 'kwtools' ]; then
-            echo -e "${yellow}[INFO]:${plain} Installing kwtools....."
-            pip install kwtools --user pkg
-
-        # 2. talib # 耗时较长 (about 5min)
-        elif [ ${python_package} == 'talib' ]; then
+        # 1. talib # 安装比较复杂, 不是简单的`pip install <package>` 耗时较长 (about 5min)
+        if [ ${python_package} == 'talib' ]; then
             if ! pip list | grep -o "TA-Lib"; then
                 echo -e "${yellow}[INFO]:${plain} Installing talib....."
                 wget "http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz"
@@ -107,8 +105,16 @@ install_python_packages(){
                 cd ${home_path}
                 rm -rf ta-lib* # 删除安装包
             fi
+
+        # # 2. kwtools
+        # elif [ ${python_package} == 'kwtools' ]; then
+        #     echo -e "${yellow}[INFO]:${plain} Installing kwtools....."
+        #     pip install kwtools --user pkg
+
+        # 2. 其它python库
         else
-            echo "没有匹配${python_package}的安装内容"
+            echo -e "${yellow}[INFO]:${plain} Installing ${python_package}....."
+            pip install ${python_package} --user pkg
         fi
     done
     # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

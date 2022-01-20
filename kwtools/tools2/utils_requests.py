@@ -23,6 +23,7 @@ from kwtools.settings import logger
 
 
 
+
 METHOD_LOCKERS = {} # Coroutine lockers. e.g. {"locker_name": locker}
 
 
@@ -89,6 +90,11 @@ class AsyncRequests(object):
                 code, success, error = await cls.aio_req(method=method, url=url, timeout=timeout, **kwargs)
                 if error:
                     raise IOError(error)
+                elif isinstance(success, str):
+                    try:
+                        success = json.loads(success)
+                    except:
+                        pass
                 return code, success, None
             except Exception as e:
                 try:
@@ -99,7 +105,6 @@ class AsyncRequests(object):
                 logger.warning(f"[Req Error] ({i}/{retry_times} retry request)")
             i += 1
         return code, None, error
-
 
 
     @classmethod
@@ -207,7 +212,6 @@ class AsyncRequests(object):
             return 400, None, error
 
 
-
     @classmethod
     def _get_session(cls, url):
         """ Get the connection session for url's domain, if no session, create a new.
@@ -224,6 +228,7 @@ class AsyncRequests(object):
             session = aiohttp.ClientSession()
             cls._SESSIONS[key] = session
         return cls._SESSIONS[key]
+
 
     @classmethod
     @async_method_locker("AsyncRequests.close.locker", timeout=5)
@@ -260,6 +265,11 @@ class Requests(object):
                 code, success, error = cls.req(method=method, url=url, timeout=timeout, **kwargs)
                 if error:
                     raise IOError(error)
+                elif isinstance(success, str):
+                    try:
+                        success = json.loads(success)
+                    except:
+                        pass
                 return code, success, None
             except Exception as e:
                 try:
@@ -270,7 +280,6 @@ class Requests(object):
                 logger.warning(f"[Req Error] ({i}/{retry_times} retry request)")
             i += 1
         return code, None, error
-
 
 
     @classmethod
@@ -291,7 +300,8 @@ class Requests(object):
                 proxies: <dict>; eg: {"http" : "http://127.0.0.1:7890"}
                 auth: pass; (default is None)
                 allow_redirects: (default is True)
-                verify_ssl: pass
+                verify: <bool>; eg: True or False
+
 
         Return:
             code: HTTP response code.
@@ -313,7 +323,10 @@ class Requests(object):
                     <class 'OSError'>: 预期内的异常
                     <class 'Exception'>: 预期外的异常
         """
-        # 为了统一 (待删)
+        # 创建会话对象
+        session = cls._get_session(url)
+
+        # 参数处理
         if "proxy" in kwargs.keys():
             proxy = kwargs.pop("proxy")
             if isinstance(proxy, str):
@@ -321,16 +334,23 @@ class Requests(object):
                     kwargs["proxies"] = {"https":proxy}
                 elif proxy.split("://")[0] == "http":
                     kwargs["proxies"] = {"http":proxy}
-        session = cls._get_session(url)
+        if "verify" in kwargs.keys():
+            verify = kwargs.get("verify")
+            kwargs.pop("verify")
+        else:
+            verify = False
+        if isinstance(data, dict):
+            data = json.dumps(data)
+
         try:
             if method.upper() == "GET":
-                response = session.get(url, params=params, headers=headers, timeout=timeout, **kwargs)
+                response = session.get(url, params=params, headers=headers, timeout=timeout, verify=verify, **kwargs)
             elif method.upper() == "POST":
-                response = session.post(url, params=params, data=data, headers=headers, timeout=timeout, **kwargs)
+                response = session.post(url, params=params, data=data, headers=headers, timeout=timeout, verify=verify, **kwargs)
             elif method.upper() == "PUT":
-                response = session.put(url, params=params, data=data, headers=headers, timeout=timeout, **kwargs)
+                response = session.put(url, params=params, data=data, headers=headers, timeout=timeout, verify=verify, **kwargs)
             elif method.upper() == "DELETE":
-                response = session.delete(url, params=params, data=data, headers=headers, timeout=timeout, **kwargs)
+                response = session.delete(url, params=params, data=data, headers=headers, timeout=timeout, verify=verify, **kwargs)
             else:
                 raise IOError(f"[Http Method Error] method:{method}")
 
@@ -388,7 +408,6 @@ class Requests(object):
             return 400, None, error
 
 
-
     @classmethod
     def _get_session(cls, url):
         """ Get the connection session for url's domain, if no session, create a new.
@@ -405,9 +424,6 @@ class Requests(object):
             session = requests.Session()
             cls._SESSIONS[key] = session
         return cls._SESSIONS[key]
-
-
-
 
 
 
