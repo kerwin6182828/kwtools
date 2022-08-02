@@ -156,9 +156,10 @@ pip install kwtools==0.1.4
 
 
 # 9. 导出远程端的excel表格
-scp -r mirror@45.63.120.150:~/outputs/2021-12-23_16_友幸_财务报表.xlsx ~/Desktop
-scp -r mirror@45.63.120.150:~/outputs/2021-12-28_17_友幸_财务报表.xlsx ~/Desktop/outputs
-scp -r mirror@45.63.120.150:~/outputs/2022-01-03_09_友幸_财务报表.xlsx ~/Desktop/outputs
+scp -r kerwin@45.63.120.150:~/outputs/2021-12-23_16_友幸_财务报表.xlsx ~/Desktop
+scp -r kerwin@45.63.120.150:~/outputs/2021-12-28_17_友幸_财务报表.xlsx ~/Desktop/outputs
+scp -r kerwin@45.63.120.150:~/outputs/2022-01-03_09_友幸_财务报表.xlsx ~/Desktop/outputs
+scp -r kerwin@45.63.120.150:~/outputs/2022-02-01_14_友幸_财务报表.xlsx ~/Desktop/outputs
 
 
 
